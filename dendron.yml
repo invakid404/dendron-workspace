@@ -15,6 +15,11 @@ site:
     description: Personal knowledge space
     siteLastModified: true
     gh_edit_branch: main
+    duplicateNoteBehavior:
+        action: useVault
+        payload:
+            - blog
+            - notes
 commands:
     lookup:
         note:
@@ -33,6 +38,12 @@ commands:
         enableMarker: false
 workspace:
     vaults:
+        -
+            fsPath: ../inva-blog
+            remote:
+                type: git
+                url: 'git@github.com:invakid404/inva-blog.git'
+            name: blog
         -
             fsPath: ../notes
             visibility: private

@@ -1,6 +1,10 @@
 {
     "folders": [
         {
+            "path": "../inva-blog",
+            "name": "blog"
+        },
+        {
             "path": "../notes"
         }
     ],
