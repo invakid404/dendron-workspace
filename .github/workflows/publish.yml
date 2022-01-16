@@ -45,6 +45,11 @@ jobs:
     - name: Delete next cache
       run: "(test -d .next/.next) && (rm -rf .next/.next && echo 'delete Next.js cache') || echo 'no Next.js cache found'"
 
+    - name: Remove private vaults (again)
+      run: |
+        yq -yi '.workspace.vaults |= [.[] | select(.visibility != "private")]' dendron.yml
+        yq -yi '[.workspace.vaults[].name] as $vaults | .site.duplicateNoteBehavior.payload |= [.[] | select(IN($vaults[]))]' dendron.yml
+
     - name: Export notes
       run: npx dendron publish export --target github --yes
 
