@@ -19,6 +19,7 @@ site:
         action: useVault
         payload:
             - vault
+            - notes
 commands:
     lookup:
         note:
@@ -37,6 +38,13 @@ commands:
         enableMarker: false
 workspace:
     vaults:
+        -
+            fsPath: ../notes
+            visibility: private
+            remote:
+                type: git
+                url: 'git@github.com:invakid404/notes.git'
+            name: notes
         -
             fsPath: vault
     journal:
