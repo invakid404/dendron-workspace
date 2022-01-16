@@ -1,0 +1,11 @@
+{
+  "name": "dendron-workspace",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:invakid404/dendron-workspace.git",
+  "author": "invakid404 <invakid404@riseup.net>",
+  "license": "MIT",
+  "dependencies": {
+    "@dendronhq/dendron-cli": "^0.77.0"
+  }
+}
