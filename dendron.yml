@@ -43,14 +43,14 @@ workspace:
             fsPath: ../inva-blog
             remote:
                 type: git
-                url: 'git@github.com:invakid404/inva-blog.git'
+                url: 'https://github.com/invakid404/inva-blog.git'
             name: blog
         -
             fsPath: ../notes
             visibility: private
             remote:
                 type: git
-                url: 'git@github.com:invakid404/notes.git'
+                url: 'https://github.com/invakid404/notes.git'
             name: notes
     journal:
         dailyDomain: daily
