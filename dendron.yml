@@ -12,8 +12,8 @@ site:
         - blog
     siteRootDir: docs
     usePrettyRefs: true
-    title: Dendron
-    description: Personal knowledge space
+    title: invak.id
+    description: invakid404's personal website
     siteLastModified: true
     gh_edit_branch: main
     duplicateNoteBehavior:
