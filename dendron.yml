@@ -6,6 +6,7 @@ useKatex: true
 dev:
     enablePreviewV2: true
 site:
+    siteUrl: https://www.invak.id
     copyAssets: true
     siteHierarchies:
         - home
