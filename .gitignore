@@ -2,7 +2,7 @@ node_modules
 .dendron.*
 build
 seeds
-
+.next
 
 ../notes
 ../inva-blog
