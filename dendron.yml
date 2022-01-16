@@ -15,11 +15,6 @@ site:
     description: Personal knowledge space
     siteLastModified: true
     gh_edit_branch: main
-    duplicateNoteBehavior:
-        action: useVault
-        payload:
-            - vault
-            - notes
 commands:
     lookup:
         note:
@@ -45,8 +40,6 @@ workspace:
                 type: git
                 url: 'git@github.com:invakid404/notes.git'
             name: notes
-        -
-            fsPath: vault
     journal:
         dailyDomain: daily
         name: journal
