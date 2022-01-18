@@ -28,30 +28,11 @@ jobs:
     - name: Install npm dependencies
       run: yarn
 
-    - name: Remove private vaults
-      run: |
-        sudo apt update
-        sudo apt install jq python3 python3-pip
-        sudo pip3 install yq
-        yq -yi '.workspace.vaults |= [.[] | select(.visibility != "private")]' dendron.yml
-        yq -yi '[.workspace.vaults[].name] as $vaults | .site.duplicateNoteBehavior.payload |= [.[] | select(IN($vaults[]))]' dendron.yml
-
-    - name: Initialize workspace
-      run: yarn dendron workspace init
-
-    - name: Initialize or pull nextjs template
-      run: "(test -d .next) && (echo 'updating dendron next...' && cd .next && git reset --hard && git clean -f && git pull && yarn && cd ..) || (echo 'init dendron next' && npx dendron publish init)"
-
-    - name: Delete next cache
-      run: "(test -d .next/.next) && (rm -rf .next/.next && echo 'delete Next.js cache') || echo 'no Next.js cache found'"
-
-    - name: Remove private vaults (again)
-      run: |
-        yq -yi '.workspace.vaults |= [.[] | select(.visibility != "private")]' dendron.yml
-        yq -yi '[.workspace.vaults[].name] as $vaults | .site.duplicateNoteBehavior.payload |= [.[] | select(IN($vaults[]))]' dendron.yml
-
-    - name: Export notes
-      run: npx dendron publish export --target github --yes
+    - name: Publish workspace
+      uses: invakid404/dendron-multi-publish-action@master
+      with:
+        dendron-cli-command: npx dendron
+        ignore-private: true
 
     - name: Deploy site
       uses: peaceiris/actions-gh-pages@v3
