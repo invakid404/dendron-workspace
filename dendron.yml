@@ -15,7 +15,7 @@ site:
     usePrettyRefs: true
     title: invak.id
     description: invakid404's personal website
-    siteLastModified: true
+    siteLastModified: false
     gh_edit_branch: main
     duplicateNoteBehavior:
         action: useVault
