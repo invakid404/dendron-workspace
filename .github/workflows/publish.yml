@@ -31,6 +31,7 @@ jobs:
       run: yarn
 
     - name: Publish workspace
+      id: publish
       uses: invakid404/dendron-multi-publish-action@master
       with:
         dendron-cli-command: npx dendron
@@ -38,6 +39,7 @@ jobs:
 
     - name: Deploy site
       uses: peaceiris/actions-gh-pages@v3
+      if: ${{ steps.publish.outputs.was-published == 'true' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: pages
