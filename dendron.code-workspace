@@ -1,6 +1,10 @@
 {
     "folders": [
         {
+            "path": "kachvame-wiki/vault",
+            "name": "kachvame-wiki"
+        },
+        {
             "path": "../inva-blog",
             "name": "blog"
         },

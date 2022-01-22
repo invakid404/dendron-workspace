@@ -6,7 +6,7 @@ useKatex: true
 dev:
     enablePreviewV2: true
 site:
-    siteUrl: https://www.invak.id
+    siteUrl: 'https://www.invak.id'
     copyAssets: true
     siteHierarchies:
         - home
@@ -22,6 +22,7 @@ site:
         payload:
             - blog
             - notes
+            - kachvame-wiki
 commands:
     lookup:
         note:
@@ -39,6 +40,11 @@ commands:
     insertNoteIndex:
         enableMarker: false
 workspace:
+    workspaces:
+        kachvame-wiki:
+            remote:
+                type: git
+                url: 'https://github.com/kachvame/wiki.git'
     vaults:
         -
             fsPath: ../inva-blog
@@ -53,6 +59,11 @@ workspace:
                 type: git
                 url: 'https://github.com/invakid404/notes.git'
             name: notes
+        -
+            fsPath: vault
+            visibility: private
+            workspace: kachvame-wiki
+            name: kachvame-wiki
     journal:
         dailyDomain: daily
         name: journal
