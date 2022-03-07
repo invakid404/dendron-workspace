@@ -42,14 +42,14 @@
     lodash "^4.17.21"
     node-fetch "^2.6.1"
 
-"@dendronhq/api-server@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/api-server/-/api-server-0.83.0.tgz#e0f5fac143457dcd6838bce8881236c08a8cab35"
-  integrity sha512-A/LgPcea+EKZ7TsRBESUZFsolm1JhFyiljRWXNPh+BatZSM6uuFNKpXx+5fITI0sfL4xvoHBxyE+ZHYmYw9ICg==
+"@dendronhq/api-server@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/api-server/-/api-server-0.84.0.tgz#802b793488fe2ac690d7dcac90207ab36de0c451"
+  integrity sha512-mQQ5PwIpHVMQjy6Lk5ushXBAlHR9C/yoG4F+vuGmzYf7ufjyngwZyDXAigevkHbYF8sFy/oVK9Nh6hONbiT+Tw==
   dependencies:
-    "@dendronhq/common-all" "^0.83.0"
-    "@dendronhq/common-server" "^0.83.0"
-    "@dendronhq/engine-server" "^0.83.0"
+    "@dendronhq/common-all" "^0.84.0"
+    "@dendronhq/common-server" "^0.84.0"
+    "@dendronhq/engine-server" "^0.84.0"
     "@sentry/integrations" "^6.13.1"
     "@sentry/node" "^6.13.1"
     cors "^2.8.5"
@@ -61,10 +61,10 @@
     morgan "^1.10.0"
     querystring "^0.2.1"
 
-"@dendronhq/common-all@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/common-all/-/common-all-0.83.0.tgz#242c54dbc861402074ff98b4d7ad3dcd9003f0d7"
-  integrity sha512-bzwOvqP5BpAZxxB12DoPXdZaE8/K3Wx4l9uNboukUOHju5V1TRuayFD88NF3krjyrMxcxoLReuFjIVnPWDUuFg==
+"@dendronhq/common-all@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/common-all/-/common-all-0.84.0.tgz#351a2287c71fd1107fef67667335b801b534b219"
+  integrity sha512-K5wOKDGZux1g+sTSzOhfDu8ullv480UNvrrS3NWrXbCrUFcovwNCcHXbnknU1PqJyDmNOcVFns4rQA0eJzF5wQ==
   dependencies:
     "@types/github-slugger" "^1.3.0"
     "@types/lodash" "^4.14.152"
@@ -94,12 +94,12 @@
     vscode-uri "^2.1.2"
     yamljs "^0.3.0"
 
-"@dendronhq/common-server@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/common-server/-/common-server-0.83.0.tgz#0117d4342b125fcef17414159832f3d034978f6f"
-  integrity sha512-2cU3syfPHvB2IQ9ElSIpgbD1cAehm9Wu3Ig1/qtYL7MiXS2eo6xxUKD7Se+SveY9aJnIIEkvdAd3DFXrSOHjxQ==
+"@dendronhq/common-server@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/common-server/-/common-server-0.84.0.tgz#0a9406b678a5e127b1d00e85525d83c13208570d"
+  integrity sha512-EFHPadXwuCZ339Q1d1N3rrgreLRpa7rmGVugYgS1Urzz/27oyAxdhotRFnr86GPBlWF+l9W2Ft2ta9pk+NnzpQ==
   dependencies:
-    "@dendronhq/common-all" "^0.83.0"
+    "@dendronhq/common-all" "^0.84.0"
     "@sentry/integrations" "^6.13.3"
     "@sentry/node" "^6.13.3"
     "@types/analytics-node" "^3.1.6"
@@ -131,18 +131,19 @@
     vscode-uri "^2.1.2"
     yaml-unist-parser "^1.3.1"
 
-"@dendronhq/dendron-cli@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-cli/-/dendron-cli-0.83.0.tgz#59db2b965b533095de4c8db0ccc7f84844d55e03"
-  integrity sha512-iC+nxUb5D1crN7F78uI19NBOvmzJfsu4UEoNYPiPpr2GBRRd17/Nd9m1sNAPPIT2JfITu6gxMrNSY9wUIQWy2w==
+"@dendronhq/dendron-cli@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-cli/-/dendron-cli-0.84.0.tgz#c94d13ca13f090ca3d760c0e7f54a2cb2df310e9"
+  integrity sha512-2HM7Mjl2yzUG8j5To9/+1hRSL4AcnX4h6DW8wd5Wbq8gvtJHowf2UCBXlsi5/ep4xJcTDdIzkXZztMLDMvKm7Q==
   dependencies:
-    "@dendronhq/api-server" "^0.83.0"
-    "@dendronhq/common-all" "^0.83.0"
-    "@dendronhq/common-server" "^0.83.0"
-    "@dendronhq/engine-server" "^0.83.0"
-    "@dendronhq/pods-core" "^0.83.0"
+    "@dendronhq/api-server" "^0.84.0"
+    "@dendronhq/common-all" "^0.84.0"
+    "@dendronhq/common-server" "^0.84.0"
+    "@dendronhq/engine-server" "^0.84.0"
+    "@dendronhq/pods-core" "^0.84.0"
     "@jcoreio/async-throttle" "^1.3.2"
     "@types/prompts" "^2.0.14"
+    clipboardy "2.3.0"
     fs-extra "^9.0.1"
     gray-matter "^4.0.2"
     lodash "^4.17.19"
@@ -152,13 +153,13 @@
     ts-json-schema-generator "^0.95.0"
     yargs "^15.4.1"
 
-"@dendronhq/engine-server@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/engine-server/-/engine-server-0.83.0.tgz#a1d7a243408a36e2d26651ef35cb86b00eb151a2"
-  integrity sha512-0S5kwpS26skEgJV1eIVctlhvyVsEDPS5NEodDnC1YvPkRqYe2NQg/AEkn5KQkLPgWqj/rZs1UZdTGq4SNglCtQ==
+"@dendronhq/engine-server@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/engine-server/-/engine-server-0.84.0.tgz#8fd6b8fc21d3fa399ac765efc76141c8d5a75cab"
+  integrity sha512-tlRQHCdEX76Hgq/nnWTdMqviHLJw+Rkx783vxir/CJEvWKzkNZir/C9eS7T9R/Td643cEBP52mQw9C/IUPzDvA==
   dependencies:
-    "@dendronhq/common-all" "^0.83.0"
-    "@dendronhq/common-server" "^0.83.0"
+    "@dendronhq/common-all" "^0.84.0"
+    "@dendronhq/common-server" "^0.84.0"
     "@dendronhq/remark-mermaid" "^0.2.0"
     "@jcoreio/async-throttle" "^1.4.3"
     "@mapbox/rehype-prism" "^0.5.0"
@@ -215,15 +216,15 @@
     vscode-uri "^2.1.2"
     yamljs "^0.3.0"
 
-"@dendronhq/pods-core@^0.83.0":
-  version "0.83.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/pods-core/-/pods-core-0.83.0.tgz#6724f1cacf2956a4430ba744dc806d69ab864338"
-  integrity sha512-ObzLe78aFfXOpanX2Q5WxzIen1d/JNjeNADcpgm79bs2tXuZK3oubbRmvOrnaUa42YXWCup4eOnlyWzzTUOgeA==
+"@dendronhq/pods-core@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/pods-core/-/pods-core-0.84.0.tgz#4da4cf4162eb5f023a5aff5e39519ddab61ae26e"
+  integrity sha512-IWzDl/n1hD2Qa5J2CXTbrCSJjZSvauuP485uuZQeXipv0vOig2jrCbOgZO/f1l7gfnlMq+FFjpt4DnLiRvgpEw==
   dependencies:
     "@dendronhq/airtable" "^0.11.1"
-    "@dendronhq/common-all" "^0.83.0"
-    "@dendronhq/common-server" "^0.83.0"
-    "@dendronhq/engine-server" "^0.83.0"
+    "@dendronhq/common-all" "^0.84.0"
+    "@dendronhq/common-server" "^0.84.0"
+    "@dendronhq/engine-server" "^0.84.0"
     "@instantish/martian" "1.0.3"
     "@notionhq/client" "^0.1.9"
     "@octokit/graphql" "^4.6.4"
@@ -829,7 +830,7 @@ anymatch@^3.1.2, anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-arch@^2.1.0:
+arch@^2.1.0, arch@^2.1.1:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/arch/-/arch-2.2.0.tgz#1bc47818f305764f23ab3306b0bfc086c5a29d11"
   integrity sha512-Of/R0wqp83cgHozfIYLbBMnej79U/SVGOOyuB3VVFv1NRM/PSFMK12x9KVtiYzJqmnU5WR2qp0Z5rHb7sWGnFQ==
@@ -1127,6 +1128,15 @@ clipboardy@1.2.2:
     arch "^2.1.0"
     execa "^0.8.0"
 
+clipboardy@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/clipboardy/-/clipboardy-2.3.0.tgz#3c2903650c68e46a91b388985bc2774287dba290"
+  integrity sha512-mKhiIL2DrQIsuXMgBgnfEHOZOryC7kY7YO//TN6c63wlEm3NG5tz+YgY5rVi29KCmq/QQjKYvM7a19+MDOTHOQ==
+  dependencies:
+    arch "^2.1.1"
+    execa "^1.0.0"
+    is-wsl "^2.1.1"
+
 cliui@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-6.0.0.tgz#511d702c0c4e41ca156d7d0e96021f23e13225b1"
@@ -1271,6 +1281,17 @@ cross-spawn@^5.0.1:
   integrity sha1-6L0O/uWPz/b4+UUQoKVUu/ojVEk=
   dependencies:
     lru-cache "^4.0.1"
+    shebang-command "^1.2.0"
+    which "^1.2.9"
+
+cross-spawn@^6.0.0:
+  version "6.0.5"
+  resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
+  integrity sha512-eTVLrBSt7fjbDygz805pMnstIs2VTBNkRm0qxZd+M7A5XDdxVRWO5MxGBXZhjY4cqLYLdtrGqRf8mBPmzwSpWQ==
+  dependencies:
+    nice-try "^1.0.4"
+    path-key "^2.0.1"
+    semver "^5.5.0"
     shebang-command "^1.2.0"
     which "^1.2.9"
 
@@ -1499,6 +1520,19 @@ execa@^0.8.0:
   dependencies:
     cross-spawn "^5.0.1"
     get-stream "^3.0.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
+
+execa@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/execa/-/execa-1.0.0.tgz#c6236a5bb4df6d6f15e88e7f017798216749ddd8"
+  integrity sha512-adbxcyWV46qiHyvSp50TKt05tB4tK3HcmF7/nxfAdhnox83seTDbwnaqKO4sXRy7roHAIFqJP/Rw/AuEbX61LA==
+  dependencies:
+    cross-spawn "^6.0.0"
+    get-stream "^4.0.0"
     is-stream "^1.1.0"
     npm-run-path "^2.0.0"
     p-finally "^1.0.0"
@@ -1803,6 +1837,13 @@ get-stream@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
   integrity sha1-jpQ9E1jcN1VQVOy+LtsFqhdO3hQ=
+
+get-stream@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-4.1.0.tgz#c1b255575f3dc21d59bfc79cd3d2b46b1c3a54b5"
+  integrity sha512-GMat4EJ5161kIy2HevLlr4luNjBgvmj413KaQA7jt4V8B4RDsfpHk7WQ9GVqfYyyx8OS/L66Kox+rJRNklLK7w==
+  dependencies:
+    pump "^3.0.0"
 
 get-stream@^5.0.0, get-stream@^5.1.0:
   version "5.2.0"
@@ -2251,6 +2292,11 @@ is-decimal@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-decimal/-/is-decimal-1.0.4.tgz#65a3a5958a1c5b63a706e1b333d7cd9f630d3fa5"
   integrity sha512-RGdriMmQQvZ2aqaQq3awNA6dCGtKpiDFcOzrTWrDAT2MiWrKQVPmxLGHl7Y2nNu6led0kEyoX0enY0qXYsv9zw==
 
+is-docker@^2.0.0:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/is-docker/-/is-docker-2.2.1.tgz#33eeabe23cfe86f14bde4408a02c0cfb853acdaa"
+  integrity sha512-F+i2BKsFrH66iaUFc0woD8sLy8getkwTwtOBjvs56Cx4CgJDeKQeqfz8wAYiSb8JOprWhHH5p77PbmYCvvUuXQ==
+
 is-empty@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/is-empty/-/is-empty-1.2.0.tgz#de9bb5b278738a05a0b09a57e1fb4d4a341a9f6b"
@@ -2337,6 +2383,13 @@ is-word-character@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-word-character/-/is-word-character-1.0.4.tgz#ce0e73216f98599060592f62ff31354ddbeb0230"
   integrity sha512-5SMO8RVennx3nZrqtKwCGyyetPE9VDba5ugvKLaD4KopPG5kR4mQ7tNt/r7feL5yt5h3lpuBbIUmCOG2eSzXHA==
+
+is-wsl@^2.1.1:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/is-wsl/-/is-wsl-2.2.0.tgz#74a4c76e77ca9fd3f932f290c17ea326cd157271"
+  integrity sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==
+  dependencies:
+    is-docker "^2.0.0"
 
 isexe@^2.0.0:
   version "2.0.0"
@@ -2948,6 +3001,11 @@ negotiator@0.6.2:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
+nice-try@^1.0.4:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
+  integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
+
 node-fetch@*:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.1.1.tgz#d0d9607e455b3087e3092b821b5b1f1ebf4c2147"
@@ -3168,7 +3226,7 @@ path-is-absolute@^1.0.0:
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
   integrity sha1-F0uSaHNVNP+8es5r9TpanhtcX18=
 
-path-key@^2.0.0:
+path-key@^2.0.0, path-key@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/path-key/-/path-key-2.0.1.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
   integrity sha1-QRyttXTFoUDTpLGRDUDYDMn0C0A=
@@ -3626,6 +3684,11 @@ section-matter@^1.0.0:
   dependencies:
     extend-shallow "^2.0.1"
     kind-of "^6.0.0"
+
+semver@^5.5.0:
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
+  integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
 semver@^7.3.2:
   version "7.3.5"
