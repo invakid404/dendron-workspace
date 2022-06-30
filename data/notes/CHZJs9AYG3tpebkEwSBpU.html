@@ -1,0 +1,29 @@
+<h1 id="automatic-publishing-with-remote-vaults"><a aria-hidden="true" class="anchor-heading" href="#automatic-publishing-with-remote-vaults"><svg aria-hidden="true" viewBox="0 0 16 16"><use xlink:href="#svg-link"></use></svg></a>Automatic Publishing with Remote Vaults</h1>
+<p><img src="/assets/images/vaults.jpg" alt="vaults"></p>
+<p>I have a single Dendron workspace with multiple remote vaults connected to it.
+It lives in <a href="https://github.com/invakid404/dendron-workspace">this</a> repo and has
+both my public vaults (like this blog) and my private vaults (personal notes).</p>
+<p>The pros of such a setup are that I only have a single instance of VS Code
+dedicated to Dendron. Also, I like having a single point of access for all of my
+notes since it minimizes the shuffling around I need to do.</p>
+<p>The biggest con was that it was annoying to publish it via a CI/CD pipeline
+since some of the vaults live in private repos. The reason this is a problem is
+that <code>dendron workspace init</code> tries to clone those vaults but fails.</p>
+<p>At first, I hacked together a couple of <a href="https://github.com/kislyuk/yq">yq</a>
+commands to remove all vaults with <code>private</code> visibility, but those are too ugly
+to show in this post :D.</p>
+<p>Instead, I decided to put together a custom action for GitHub Actions, which
+does the same thing for me in a tidier way and a bit more. I decided to call it
+"Dendron Multi-Publish", and you can find it
+<a href="https://github.com/invakid404/dendron-multi-publish-action">here</a>.</p>
+<p>The action does a few things. It:</p>
+<ul>
+<li>Initializes the workspace - pulls in all of your remote workspaces and vaults.</li>
+<li>Checks whether there are any changes - it hashes all of your notes and assets
+to figure out whether anything is modified.</li>
+<li>Exports your notes for publishing in GitHub Pages.</li>
+<li>Caches the published notes - it uses GH Actions cache to avoid having to
+re-export the same notes.</li>
+</ul>
+<p>You can check out the way I'm using it
+<a href="https://github.com/invakid404/dendron-workspace/blob/master/.github/workflows/publish.yml">here</a>.</p>

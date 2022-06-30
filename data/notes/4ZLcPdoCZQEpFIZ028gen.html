@@ -1,0 +1,142 @@
+<h1 id="automating-seed-tldr"><a aria-hidden="true" class="anchor-heading" href="#automating-seed-tldr"><svg aria-hidden="true" viewBox="0 0 16 16"><use xlink:href="#svg-link"></use></svg></a>Automating seed-tldr</h1>
+<p><img src="/assets/images/seed-tldr.png" alt="seed-tldr"></p>
+<p>I recently found out about <a href="https://www.dendron.so">Dendron</a> through the Funtoo
+Linux Discord server and thought it was a very cool project. In the process of
+experimenting with it, I was pleasantly surprised to see that I could add
+<a href="https://github.com/tldr-pages/tldr">tldr-pages</a> to my workspace. </p>
+<p>As a person who uses tldr-pages daily (I tend to forget how to do basic stuff in
+the command line quite often), I immediately liked the idea of using Dendron to
+browse them instead of a standalone tldr client. That way, I can easily search
+through my cheatsheets and tldr-pages at once. I added it to my Dendron
+workspace, tried to look up the page for
+<a href="https://www.funtoo.org/Package:Ego">ego</a>, but it wasn't there... Hmm, that's
+weird, I'm sure there's a page for ego since I've contributed it myself...</p>
+<p>I figured out that the tldr pages for Dendron come from the <a href="https://github.com/kevinslin/seed-tldr">seed-tldr
+repo</a>, and it struck me as a little bit
+odd that the repo was last updated in June 2021. I would've thought such things
+would be automatically kept up-to-date with some CI/CD pipeline, but that wasn't
+the case. I'm a big fan of automating stuff, so I thought this was a perfect
+opportunity to contribute!</p>
+<p>My idea was to add the tldr-pages repository as a submodule of seed-tldr and use
+it to determine what has changed since the last update. There already was a
+GitHub Actions workflow, but it only published the imported pages on push to
+main. Thankfully, GitHub Actions has a
+<a href="https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule">schedule</a>
+workflow trigger that runs the workflow automatically based on a cron
+expression. My first step was to make the workflow run every hour, which I did
+like so:</p>
+<pre class="language-yml"><code class="language-yml"><span class="token key atrule">on</span><span class="token punctuation">:</span>
+  <span class="token key atrule">push</span><span class="token punctuation">:</span>
+    <span class="token key atrule">branches</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> main
+  <span class="token comment"># Run every hour</span>
+  <span class="token key atrule">schedule</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">cron</span><span class="token punctuation">:</span> <span class="token string">"0 * * * *"</span>
+</code></pre>
+<p>Then, I had to come up with a list of files that were changed to determine
+whether we need to perform the import or not. First, I had to get the
+last/cached commit of the tldr-pages submodule. This can be achieved by running
+<code>git submodule status --cached</code>. The output of that command looks something like
+this:</p>
+<pre><code>-47445dd7860917026b4df1845f4c54a0f3d6ab94 repos/tldr
+</code></pre>
+<p>To extract the actual commit SHA, I piped it into a couple of <code>cut</code> commands and
+ended up with <code>git submodule status --cached | grep tldr | cut -d' ' -f1 | cut -c2-</code>.</p>
+<p>Now, I can update the submodules by running <code>git submodule update --init --recursive --remote</code> and then look at HEAD to determine the latest commit: <code>cd repos/tldr &#x26;&#x26; git rev-parse HEAD</code>.</p>
+<p>Armed with this information, I can finally retrieve the list of changed files by
+running <code>git diff --name-only</code> on the old and new commits. Then, I have to
+filter that list of files, since the pod only imports files from the <code>pages/</code>
+directory. This was easy enough to do with grep: <code>grep '^pages/'</code>.</p>
+<p>There is a tiny catch, though: grep returns a non-zero exit code if it matches
+nothing, and we don't want that. A simple hack to "swallow" the exit code of
+grep is to pipe its output into a command which doesn't error out, such as cat:
+<code>grep '^pages/' | cat</code>.</p>
+<p>Now we have the list of changed pages. Great! This means we can use that list to
+check whether anything we care about has changed and run the import and publish
+scripts. The final catch in this entire process is that running <code>importPod</code> does
+a full reimport, which results in bogus changes in the <code>updated</code> and <code>created</code>
+frontmatter fields of all pages, and we don't want that.</p>
+<p>We can easily fix this issue though. Remember, we have the list of changed files
+already, and we can use it to determine which files should have actually changed
+after the import. We just need to tweak thinks a bit to match the output file
+names. I achieved this with a quick and dirty sed command:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -r <span class="token string">"
+  s/\.md$//;
+  s/\./-/g;
+  s|(.*)/(.*)/(.*)|vault/<span class="token entity" title="\2">\2</span>.<span class="token entity" title="\3">\3</span>.md|;
+"</span> 
+</code></pre>
+<p>To understand what the sed command does, let's look at a particular example.
+Let's say that the list of changed files looks like this:</p>
+<pre><code>pages/common/git-secret.md
+pages/linux/ego.md
+pages/common/gdal2tiles.py.md
+</code></pre>
+<p>By looking at the <code>vault/</code> directory in seed-tldr, we can figure out how Dendron
+maps those names:</p>
+<pre><code>vault/common.git-secret.md
+vault/linux.ego.md
+vault/common.gdal2tiles-py.md
+</code></pre>
+<p>Basically, the directory name is concatenated to the file name, and all dots in
+the file name are replaced with dashes. This is exactly what the sed command
+does: first it removes the <code>.md</code> extension, then replaces all dots with dashes,
+and concatenates the folder name and file name, prepending the result with
+<code>vault/</code>.</p>
+<p>As a final step of this process, we can concatenate the result of all the
+previous commands on a single line, so that we can pass it to an action that
+commits and pushes the changes to main. This is easily achievable with <code>xargs</code>. </p>
+<p>This is how we end up with all of these steps of the workflow:</p>
+<pre class="language-yml"><code class="language-yml">    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Retrieve cached commit SHA for tldr
+      <span class="token key atrule">id</span><span class="token punctuation">:</span> tldr<span class="token punctuation">-</span>cached
+      <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        echo "::set-output name=SHA::"\
+        "$(git submodule status --cached |
+          grep tldr |
+          cut -d' ' -f1 |
+          cut -c2-)"</span>
+
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Checkout &#x26; update submodules
+      <span class="token key atrule">run</span><span class="token punctuation">:</span> git submodule update <span class="token punctuation">-</span><span class="token punctuation">-</span>init <span class="token punctuation">-</span><span class="token punctuation">-</span>recursive <span class="token punctuation">-</span><span class="token punctuation">-</span>remote
+
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Retrieve updated commit SHA for tldr
+      <span class="token key atrule">id</span><span class="token punctuation">:</span> tldr<span class="token punctuation">-</span>updated
+      <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        echo "::set-output name=SHA::$(cd repos/tldr &#x26;&#x26; git rev-parse HEAD)"</span>
+
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Retrieve list of updated tldr pages
+      <span class="token key atrule">id</span><span class="token punctuation">:</span> updated<span class="token punctuation">-</span>pages
+      <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        FILES=$(cd repos/tldr &#x26;&#x26; git diff --name-only "${OLD_SHA}" "${NEW_SHA}")
+        PAGE_FILES=$(echo "${FILES}" | grep '^pages/' | cat)</span>
+
+        echo "Changed files<span class="token punctuation">:</span>"
+        echo "$<span class="token punctuation">{</span>PAGE_FILES<span class="token punctuation">}</span>"
+
+        VAULT_FILES=$(echo "$<span class="token punctuation">{</span>PAGE_FILES<span class="token punctuation">}</span>" <span class="token punctuation">|</span> \
+          sed <span class="token punctuation">-</span>r "
+            s/\.md$//;
+            s/\./<span class="token punctuation">-</span>/g;
+            s<span class="token punctuation">|</span>(.<span class="token important">*)/(.*)/(.*)|vault/\2.\3.md|;</span>
+          " 
+        )
+
+        echo "<span class="token punctuation">:</span><span class="token punctuation">:</span>set<span class="token punctuation">-</span>output name=FILES<span class="token punctuation">:</span><span class="token punctuation">:</span>$(echo $<span class="token punctuation">{</span>VAULT_FILES<span class="token punctuation">}</span> <span class="token punctuation">|</span> xargs)"
+      <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token key atrule">OLD_SHA</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span><span class="token punctuation">{</span> steps.tldr<span class="token punctuation">-</span>cached.outputs.SHA <span class="token punctuation">}</span><span class="token punctuation">}</span>
+        <span class="token key atrule">NEW_SHA</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span><span class="token punctuation">{</span> steps.tldr<span class="token punctuation">-</span>updated.outputs.SHA <span class="token punctuation">}</span><span class="token punctuation">}</span>
+</code></pre>
+<p>(<em>Note: things are broken into multiple lines to avoid horizontal scrolling</em>)</p>
+<p>The rest is easy: we just need to run Dendron to import and publish the pages.
+After importing, we also need to push the changed pages and the tldr submodule
+to main, which is done like this:</p>
+<pre class="language-yml"><code class="language-yml">    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Push changes
+      <span class="token key atrule">uses</span><span class="token punctuation">:</span> EndBug/add<span class="token punctuation">-</span>and<span class="token punctuation">-</span>commit@v7.0.0
+      <span class="token key atrule">if</span><span class="token punctuation">:</span> steps.updated<span class="token punctuation">-</span>pages.outputs.FILES <span class="token tag">!=</span> ''
+      <span class="token key atrule">with</span><span class="token punctuation">:</span>
+        <span class="token key atrule">add</span><span class="token punctuation">:</span> <span class="token string">"./repos ${{ steps.updated-pages.outputs.FILES }}"</span>
+        <span class="token key atrule">message</span><span class="token punctuation">:</span> <span class="token string">"autoupdate docs"</span>
+        <span class="token key atrule">author_name</span><span class="token punctuation">:</span> <span class="token string">'github-actions[bot]'</span>
+        <span class="token key atrule">author_email</span><span class="token punctuation">:</span> <span class="token string">'github-actions[bot]@users.noreply.github.com'</span>
+</code></pre>
+<p>And we're basically done :)</p>

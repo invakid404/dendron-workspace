@@ -1,0 +1,548 @@
+{
+  "notes": {
+    "403": {
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "fname": "403",
+      "id": "403",
+      "title": "This page has not yet sprouted",
+      "schemaStub": false,
+      "type": "note",
+      "updated": 1656596235741,
+      "created": 1656596235741,
+      "desc": "",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": null,
+      "data": {}
+    },
+    "hmyMMZxvXVy8pCz1H2PpZ": {
+      "id": "hmyMMZxvXVy8pCz1H2PpZ",
+      "title": "Blog",
+      "desc": "",
+      "updated": 1642357004762,
+      "created": 1642357004762,
+      "custom": {
+        "nav_order": 1
+      },
+      "fname": "blog",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "1d199b20ffb74f024dd1fb20f993a69b",
+      "links": [],
+      "anchors": {},
+      "children": [
+        "AxHNakDOB6zME8xCS5XAh"
+      ],
+      "parent": null,
+      "data": {}
+    },
+    "AxHNakDOB6zME8xCS5XAh": {
+      "id": "AxHNakDOB6zME8xCS5XAh",
+      "title": "OSS Adventures",
+      "desc": "",
+      "updated": 1642851945112,
+      "created": 1642850815649,
+      "stub": false,
+      "custom": {
+        "stub": false
+      },
+      "fname": "blog.oss",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "42f66a3775a63fb41816c1a192dec0c5",
+      "links": [],
+      "anchors": {},
+      "children": [
+        "njsStgXopUvkUPbUZDNrD",
+        "2p7aJw011OceCYeRsmNtr"
+      ],
+      "parent": "hmyMMZxvXVy8pCz1H2PpZ",
+      "data": {}
+    },
+    "2p7aJw011OceCYeRsmNtr": {
+      "id": "2p7aJw011OceCYeRsmNtr",
+      "title": "Funtoo",
+      "desc": "",
+      "updated": 1643061946939,
+      "created": 1643061927050,
+      "stub": false,
+      "has_collection": true,
+      "sort_by": "date",
+      "sort_order": "reverse",
+      "custom": {
+        "stub": false,
+        "has_collection": true,
+        "sort_by": "date",
+        "sort_order": "reverse"
+      },
+      "fname": "blog.oss.funtoo",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "9d01be244d72cb4745f94c7ad4d39c27",
+      "links": [],
+      "anchors": {},
+      "children": [
+        "fReYVyqwWjpWNGn8f3hSy",
+        "emNwzI1Dq0weEz0eXLEsK",
+        "mtOTe8lbUvuixBVzLr9ZE",
+        "kl74li714iahob4f78rphx0"
+      ],
+      "parent": "AxHNakDOB6zME8xCS5XAh",
+      "data": {}
+    },
+    "kl74li714iahob4f78rphx0": {
+      "id": "kl74li714iahob4f78rphx0",
+      "title": "Having Fun with CLFS and musl",
+      "desc": "",
+      "updated": 1645682163052,
+      "created": 1645649115079,
+      "excerpt": "Experimenting with building a CLFS prefix with musl instead of glibc.",
+      "custom": {
+        "excerpt": "Experimenting with building a CLFS prefix with musl instead of glibc."
+      },
+      "fname": "blog.oss.funtoo.having-fun-with-clfs-and-musl",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "74e4ad2b8db854c74d450586b9f88a3b",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": "2p7aJw011OceCYeRsmNtr",
+      "data": {}
+    },
+    "mtOTe8lbUvuixBVzLr9ZE": {
+      "id": "mtOTe8lbUvuixBVzLr9ZE",
+      "title": "Enhancing the Node.js Autogen",
+      "desc": "",
+      "updated": 1643230811737,
+      "created": 1643224539828,
+      "excerpt": "Generating ebuilds for all Node.js release channels at once.",
+      "custom": {
+        "excerpt": "Generating ebuilds for all Node.js release channels at once."
+      },
+      "fname": "blog.oss.funtoo.enhancing-the-nodejs-autogen",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "519dfbc34bb6fa2d89096fe6d578a9f6",
+      "links": [
+        {
+          "type": "wiki",
+          "from": {
+            "fname": "blog.oss.funtoo.enhancing-the-nodejs-autogen",
+            "id": "mtOTe8lbUvuixBVzLr9ZE",
+            "vaultName": "blog"
+          },
+          "value": "blog.oss.funtoo.autogenning-nodejs",
+          "alias": "previous",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 8,
+              "offset": 70
+            },
+            "end": {
+              "line": 4,
+              "column": 55,
+              "offset": 117
+            },
+            "indent": []
+          },
+          "xvault": false,
+          "sameFile": false,
+          "to": {
+            "fname": "blog.oss.funtoo.autogenning-nodejs"
+          }
+        }
+      ],
+      "anchors": {},
+      "children": [],
+      "parent": "2p7aJw011OceCYeRsmNtr",
+      "data": {}
+    },
+    "emNwzI1Dq0weEz0eXLEsK": {
+      "id": "emNwzI1Dq0weEz0eXLEsK",
+      "title": "Building Node.js from Scratch",
+      "desc": "",
+      "updated": 1643056824189,
+      "created": 1643044468027,
+      "excerpt": "Funtooizing the Node.js ebuild.",
+      "custom": {
+        "excerpt": "Funtooizing the Node.js ebuild."
+      },
+      "fname": "blog.oss.funtoo.building-nodejs-from-scratch",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "d2704ac11052ead96281b13a8b1c1eb9",
+      "links": [
+        {
+          "from": {
+            "fname": "blog.oss.funtoo.autogenning-nodejs",
+            "vaultName": "blog"
+          },
+          "type": "backlink",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 8,
+              "offset": 70
+            },
+            "end": {
+              "line": 4,
+              "column": 65,
+              "offset": 127
+            },
+            "indent": []
+          },
+          "value": "blog.oss.funtoo.building-nodejs-from-scratch",
+          "alias": "previous"
+        }
+      ],
+      "anchors": {},
+      "children": [],
+      "parent": "2p7aJw011OceCYeRsmNtr",
+      "data": {}
+    },
+    "fReYVyqwWjpWNGn8f3hSy": {
+      "id": "fReYVyqwWjpWNGn8f3hSy",
+      "title": "Autogenning Node.js",
+      "desc": "",
+      "updated": 1643145212455,
+      "created": 1643132654642,
+      "excerpt": "Writing an autogen script for Node.js from scratch.",
+      "custom": {
+        "excerpt": "Writing an autogen script for Node.js from scratch."
+      },
+      "fname": "blog.oss.funtoo.autogenning-nodejs",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "60709ccb8be86130048fbffa5f5a7456",
+      "links": [
+        {
+          "type": "wiki",
+          "from": {
+            "fname": "blog.oss.funtoo.autogenning-nodejs",
+            "id": "fReYVyqwWjpWNGn8f3hSy",
+            "vaultName": "blog"
+          },
+          "value": "blog.oss.funtoo.building-nodejs-from-scratch",
+          "alias": "previous",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 8,
+              "offset": 70
+            },
+            "end": {
+              "line": 4,
+              "column": 65,
+              "offset": 127
+            },
+            "indent": []
+          },
+          "xvault": false,
+          "sameFile": false,
+          "to": {
+            "fname": "blog.oss.funtoo.building-nodejs-from-scratch"
+          }
+        },
+        {
+          "from": {
+            "fname": "blog.oss.funtoo.enhancing-the-nodejs-autogen",
+            "vaultName": "blog"
+          },
+          "type": "backlink",
+          "position": {
+            "start": {
+              "line": 4,
+              "column": 8,
+              "offset": 70
+            },
+            "end": {
+              "line": 4,
+              "column": 55,
+              "offset": 117
+            },
+            "indent": []
+          },
+          "value": "blog.oss.funtoo.autogenning-nodejs",
+          "alias": "previous"
+        }
+      ],
+      "anchors": {},
+      "children": [],
+      "parent": "2p7aJw011OceCYeRsmNtr",
+      "data": {}
+    },
+    "njsStgXopUvkUPbUZDNrD": {
+      "id": "njsStgXopUvkUPbUZDNrD",
+      "title": "Dendron",
+      "desc": "",
+      "updated": 1642850879330,
+      "created": 1642850815650,
+      "stub": false,
+      "has_collection": true,
+      "sort_by": "date",
+      "sort_order": "reverse",
+      "custom": {
+        "stub": false,
+        "has_collection": true,
+        "sort_by": "date",
+        "sort_order": "reverse"
+      },
+      "fname": "blog.oss.dendron",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "e881d5e9f81139e1a690c45f90f612c9",
+      "links": [],
+      "anchors": {},
+      "children": [
+        "4ZLcPdoCZQEpFIZ028gen",
+        "CHZJs9AYG3tpebkEwSBpU"
+      ],
+      "parent": "AxHNakDOB6zME8xCS5XAh",
+      "data": {}
+    },
+    "CHZJs9AYG3tpebkEwSBpU": {
+      "id": "CHZJs9AYG3tpebkEwSBpU",
+      "title": "Automatic Publishing with Remote Vaults",
+      "desc": "",
+      "updated": 1642972165628,
+      "created": 1642969203545,
+      "excerpt": "How I publish my multi-vault Dendron workspace.",
+      "custom": {
+        "excerpt": "How I publish my multi-vault Dendron workspace."
+      },
+      "fname": "blog.oss.dendron.publishing-with-remote-vaults",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "d8c64c27369a04f7985ee17a63c33085",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": "njsStgXopUvkUPbUZDNrD",
+      "data": {}
+    },
+    "4ZLcPdoCZQEpFIZ028gen": {
+      "id": "4ZLcPdoCZQEpFIZ028gen",
+      "title": "Automating seed-tldr",
+      "desc": "",
+      "updated": 1656592456743,
+      "created": 1642850815639,
+      "excerpt": "Incremental automatic updates for seed-tldr: where tldr-pages meet Dendron.",
+      "custom": {
+        "excerpt": "Incremental automatic updates for seed-tldr: where tldr-pages meet Dendron."
+      },
+      "fname": "blog.oss.dendron.automating-seed-tldr",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "8eec893ba80e6bb7d33581bffe09416e",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": "njsStgXopUvkUPbUZDNrD",
+      "data": {}
+    },
+    "kJSrh913JPlgbAUmUdXup": {
+      "id": "kJSrh913JPlgbAUmUdXup",
+      "title": "Home",
+      "desc": "",
+      "updated": 1642357000034,
+      "created": 1642356993265,
+      "custom": {
+        "nav_order": 0,
+        "permalink": "/"
+      },
+      "fname": "home",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "90a6a18e9336fb7be104cedc840612c0",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": null,
+      "data": {}
+    }
+  },
+  "domains": [
+    {
+      "id": "kJSrh913JPlgbAUmUdXup",
+      "title": "Home",
+      "desc": "",
+      "updated": 1642357000034,
+      "created": 1642356993265,
+      "custom": {
+        "nav_order": 0,
+        "permalink": "/"
+      },
+      "fname": "home",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "90a6a18e9336fb7be104cedc840612c0",
+      "links": [],
+      "anchors": {},
+      "children": [],
+      "parent": null,
+      "data": {},
+      "body": "\nWelcome to invakid404's blog.\n"
+    },
+    {
+      "id": "hmyMMZxvXVy8pCz1H2PpZ",
+      "title": "Blog",
+      "desc": "",
+      "updated": 1642357004762,
+      "created": 1642357004762,
+      "custom": {
+        "nav_order": 1
+      },
+      "fname": "blog",
+      "type": "note",
+      "vault": {
+        "fsPath": "../inva-blog",
+        "remote": {
+          "type": "git",
+          "url": "https://github.com/invakid404/inva-blog.git"
+        },
+        "name": "blog"
+      },
+      "contentHash": "1d199b20ffb74f024dd1fb20f993a69b",
+      "links": [],
+      "anchors": {},
+      "children": [
+        "AxHNakDOB6zME8xCS5XAh"
+      ],
+      "parent": null,
+      "data": {},
+      "body": "\n"
+    }
+  ],
+  "noteIndex": {
+    "id": "kJSrh913JPlgbAUmUdXup",
+    "title": "Home",
+    "desc": "",
+    "updated": 1642357000034,
+    "created": 1642356993265,
+    "custom": {
+      "nav_order": 0,
+      "permalink": "/"
+    },
+    "fname": "home",
+    "type": "note",
+    "vault": {
+      "fsPath": "../inva-blog",
+      "remote": {
+        "type": "git",
+        "url": "https://github.com/invakid404/inva-blog.git"
+      },
+      "name": "blog"
+    },
+    "contentHash": "90a6a18e9336fb7be104cedc840612c0",
+    "links": [],
+    "anchors": {},
+    "children": [],
+    "parent": null,
+    "data": {},
+    "body": "\nWelcome to invakid404's blog.\n"
+  },
+  "vaults": [
+    {
+      "fsPath": "../inva-blog",
+      "remote": {
+        "type": "git",
+        "url": "https://github.com/invakid404/inva-blog.git"
+      },
+      "name": "blog"
+    }
+  ]
+}

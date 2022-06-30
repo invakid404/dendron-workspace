@@ -1,0 +1,110 @@
+{
+  "roots": [
+    {
+      "key": "kJSrh913JPlgbAUmUdXup",
+      "title": "Home",
+      "icon": null,
+      "hasTitleNumberOutlined": false,
+      "vaultName": "blog",
+      "children": []
+    },
+    {
+      "key": "hmyMMZxvXVy8pCz1H2PpZ",
+      "title": "Blog",
+      "icon": null,
+      "hasTitleNumberOutlined": false,
+      "vaultName": "blog",
+      "children": [
+        {
+          "key": "AxHNakDOB6zME8xCS5XAh",
+          "title": "OSS Adventures",
+          "icon": null,
+          "hasTitleNumberOutlined": false,
+          "vaultName": "blog",
+          "children": [
+            {
+              "key": "njsStgXopUvkUPbUZDNrD",
+              "title": "Dendron",
+              "icon": null,
+              "hasTitleNumberOutlined": false,
+              "vaultName": "blog",
+              "children": [
+                {
+                  "key": "4ZLcPdoCZQEpFIZ028gen",
+                  "title": "Automating seed-tldr",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                },
+                {
+                  "key": "CHZJs9AYG3tpebkEwSBpU",
+                  "title": "Automatic Publishing with Remote Vaults",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "key": "2p7aJw011OceCYeRsmNtr",
+              "title": "Funtoo",
+              "icon": null,
+              "hasTitleNumberOutlined": false,
+              "vaultName": "blog",
+              "children": [
+                {
+                  "key": "kl74li714iahob4f78rphx0",
+                  "title": "Having Fun with CLFS and musl",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                },
+                {
+                  "key": "mtOTe8lbUvuixBVzLr9ZE",
+                  "title": "Enhancing the Node.js Autogen",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                },
+                {
+                  "key": "emNwzI1Dq0weEz0eXLEsK",
+                  "title": "Building Node.js from Scratch",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                },
+                {
+                  "key": "fReYVyqwWjpWNGn8f3hSy",
+                  "title": "Autogenning Node.js",
+                  "icon": null,
+                  "hasTitleNumberOutlined": false,
+                  "vaultName": "blog",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "child2parent": {
+    "403": null,
+    "hmyMMZxvXVy8pCz1H2PpZ": null,
+    "AxHNakDOB6zME8xCS5XAh": "hmyMMZxvXVy8pCz1H2PpZ",
+    "2p7aJw011OceCYeRsmNtr": "AxHNakDOB6zME8xCS5XAh",
+    "kl74li714iahob4f78rphx0": "2p7aJw011OceCYeRsmNtr",
+    "mtOTe8lbUvuixBVzLr9ZE": "2p7aJw011OceCYeRsmNtr",
+    "emNwzI1Dq0weEz0eXLEsK": "2p7aJw011OceCYeRsmNtr",
+    "fReYVyqwWjpWNGn8f3hSy": "2p7aJw011OceCYeRsmNtr",
+    "njsStgXopUvkUPbUZDNrD": "AxHNakDOB6zME8xCS5XAh",
+    "CHZJs9AYG3tpebkEwSBpU": "njsStgXopUvkUPbUZDNrD",
+    "4ZLcPdoCZQEpFIZ028gen": "njsStgXopUvkUPbUZDNrD",
+    "kJSrh913JPlgbAUmUdXup": null
+  }
+}

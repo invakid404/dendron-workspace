@@ -1,0 +1,264 @@
+<h1 id="autogenning-nodejs"><a aria-hidden="true" class="anchor-heading" href="#autogenning-nodejs"><svg aria-hidden="true" viewBox="0 0 16 16"><use xlink:href="#svg-link"></use></svg></a>Autogenning Node.js</h1>
+<p><img src="/assets/images/nodejs-logo-part-2.png" alt="nodejs-logo-part-2"></p>
+<p>In the <a href="/notes/emNwzI1Dq0weEz0eXLEsK">previous</a> blog post about
+Node.js, we wrote an ebuild for it from scratch. In this post, we'll look into
+how to take the existing fixed version ebuild and convert it to an autogen!</p>
+<p>Our goal for this post is to write an autogen script, which automatically
+figures out what the latest release of Node.js is and generates an ebuild for
+it. For simplicity, we'll target the latest current release of Node.js since it
+will make things a bit easier.</p>
+<p>As mentioned previously, autogens are powered by the
+<a href="https://code.funtoo.org/bitbucket/users/drobbins/repos/funtoo-metatools/browse">metatools</a>
+framework. Our first step should be to install metatools in our development
+environment. In my case, I'll be using the existing LXD container I made for the
+last post.</p>
+<p>We're interested in installing the <a href="https://code.funtoo.org/bitbucket/users/drobbins/repos/funtoo-metatools/browse/docs/install.rst#47">latest development
+sources</a>.
+At the time of writing this, the metatools ebuild in the Funtoo kits doesn't
+work, but we can still use it to instruct Portage to pull in the necessary
+dependencies.</p>
+<p>So, let's run <code>emerge --onlydeps metatools</code> and give it a moment to finish.
+After that, we also need to install <a href="https://www.mongodb.com">MongoDB</a>, since
+it's used by metatools for persistence of various things: <code>emerge mongodb</code>.</p>
+<p>A couple of massive compilations later, we can proceed with the metatools
+installation. All that's left is to clone the repos and set a few environment
+variables:</p>
+<pre class="language-sh"><code class="language-sh">$ git clone ssh://git@code.funtoo.org:7999/~drobbins/funtoo-metatools.git
+$ git clone ssh://git@code.funtoo.org:7999/~drobbins/subpop.git
+$ cat >> .bashrc &#x3C;&#x3C;EOF
+export PATH=$HOME/funtoo-metatools/bin:$PATH
+export PYTHONPATH=$HOME/subpop:$HOME/funtoo-metatools
+EOF
+$ source .bashrc
+$ doit --help
+</code></pre>
+<p>This should be the entire metatools setup covered. All that's left is to start
+MongoDB and we're ready to go: <code>/etc/init.d/mongodb start</code>.</p>
+<p>Let's go back in <code>nodejs-overlay/net-libs/nodejs</code> and turn our ebuild into a
+template:</p>
+<pre class="language-sh"><code class="language-sh">$ mkdir templates
+$ mv nodejs-16.13.2.ebuild templates/nodejs.tmpl
+</code></pre>
+<p>We can also wipe the manually generated Manifest file since metatools will
+automatically generate it for us when we run the autogen.</p>
+<p>We'll get back to the template once we flesh out our autogen script, which is
+precisely what we're going to get into now. We need to make an <code>autogen.py</code> file
+and define a <code>generate</code> async function in it like so:</p>
+<pre class="language-python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
+
+
+<span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">generate</span><span class="token punctuation">(</span>hub<span class="token punctuation">,</span> <span class="token operator">**</span>pkginfo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span>
+</code></pre>
+<p>I won't get into the details of how metatools works - for that you can refer to
+the documentation. What we need to know is that <code>generate</code> acts as the entry
+point of the autogen script. I'll also briefly explain what the two arguments we
+receive in <code>generate</code> are:</p>
+<ul>
+<li><code>hub</code>: core paradigm of Plugin-Oriented Programming; it is used to call
+metatools code.</li>
+<li><code>pkginfo</code> keyworded argument list, which contains info about the package we're
+generating (e.g. name, category, template directory, etc).</li>
+</ul>
+<p>BTW, running an autogen script is as simple as running <code>doit</code> in its directory.
+We'll be running <code>doit</code> quite often to see if things are going as expected.</p>
+<p>The first thing our autogen should do is to figure out what the latest version
+for Node is. Since we're already using GitHub to pull in the sources, the best
+way to figure this out is via the GitHub API.</p>
+<p>For this approach to work, the upstream repo should either have tags or
+releases. In the case of Node, the upstream uses
+<a href="https://github.com/nodejs/node/releases">releases</a>.</p>
+<p>By looking at the <a href="https://docs.github.com/en/rest/reference/releases#list-releases">GitHub API
+reference</a>, we
+can figure out that the endpoint we're after is
+<code>/repos/{owner}/{repo}/releases</code>. Let's try to fetch it in the autogen.</p>
+<p>First things first, we need to know the owner and repository names. Let's store
+them in two variables:</p>
+<pre class="language-python"><code class="language-python"><span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">generate</span><span class="token punctuation">(</span>hub<span class="token punctuation">,</span> <span class="token operator">**</span>pkginfo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    github_user <span class="token operator">=</span> <span class="token string">"nodejs"</span>
+    github_repo <span class="token operator">=</span> <span class="token string">"node"</span>
+</code></pre>
+<p>Then, we need to build the URL and send a request. The metatools way of doing
+this is via the <code>hub.pkgtools.fetch.get_page()</code> function:</p>
+<pre class="language-python"><code class="language-python">    releases <span class="token operator">=</span> <span class="token keyword">await</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>fetch<span class="token punctuation">.</span>get_page<span class="token punctuation">(</span>
+        <span class="token string-interpolation"><span class="token string">f"https://api.github.com/repos/</span><span class="token interpolation"><span class="token punctuation">{</span>github_user<span class="token punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token punctuation">{</span>github_repo<span class="token punctuation">}</span></span><span class="token string">/releases"</span></span><span class="token punctuation">,</span>
+        is_json<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+</code></pre>
+<p>As you can tell, the only positional argument to <code>get_page</code> is a URL. There are
+also various optional arguments, but the most useful one is <code>is_json</code> which
+parses the response as JSON for you.</p>
+<p>The endpoint is supposed to return a list of objects representing the releases.
+We can use this list to figure out what the latest release is.</p>
+<p>While, intuitively, it might make sense for the first release in the response to
+be the latest one, it's not always the case, and it's better to be safe than
+sorry.</p>
+<p>There might be draft releases or prereleases at the start of the list, and we
+definitely don't want to package those. In the case of Node, there might also be
+a LTS release created after the latest current release.</p>
+<p>What we usually do is we make use of
+<a href="https://packaging.pypa.io/en/latest/version.html"><code>packaging.version</code></a> to
+figure out what the newest version is. Let's import it in our autogen:</p>
+<pre class="language-python"><code class="language-python"><span class="token keyword">from</span> packaging <span class="token keyword">import</span> version
+</code></pre>
+<p>In addition to that, we also filter out all draft and prerelease releases.</p>
+<p>There is also a theoretical case in which we can't find a suitable release to
+package at all. While it is practically unlikely, it's still a good idea to
+handle it just in case.</p>
+<p>The magic words to do this in Python look like this:</p>
+<pre class="language-python"><code class="language-python">    <span class="token keyword">try</span><span class="token punctuation">:</span>
+        latest_release <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>
+            <span class="token punctuation">(</span>
+                release
+                <span class="token keyword">for</span> release <span class="token keyword">in</span> releases
+                <span class="token keyword">if</span> <span class="token keyword">not</span> release<span class="token punctuation">[</span><span class="token string">"prerelease"</span><span class="token punctuation">]</span> <span class="token keyword">and</span> <span class="token keyword">not</span> release<span class="token punctuation">[</span><span class="token string">"draft"</span><span class="token punctuation">]</span>
+            <span class="token punctuation">)</span><span class="token punctuation">,</span>
+            key<span class="token operator">=</span><span class="token keyword">lambda</span> release<span class="token punctuation">:</span> version<span class="token punctuation">.</span>parse<span class="token punctuation">(</span>release<span class="token punctuation">[</span><span class="token string">"tag_name"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+    <span class="token keyword">except</span> ValueError<span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>BreezyError<span class="token punctuation">(</span>
+            <span class="token string-interpolation"><span class="token string">f"Can't find suitable release of </span><span class="token interpolation"><span class="token punctuation">{</span>github_repo<span class="token punctuation">}</span></span><span class="token string">"</span></span>
+        <span class="token punctuation">)</span>
+</code></pre>
+<p>This fragment does exactly what we described above: it finds the latest release
+in terms of version, which isn't a draft or a prerelease. In the case in which
+<code>max</code> finds nothing, an error is thrown, so we catch that and rethrow something
+with a more meaningful error message.</p>
+<p>To verify it works, we can try logging <code>latest_release[tag_name]</code>. As expected,
+the result is <code>v17.4.0</code> (which is the latest at the time of writing this).</p>
+<p>Now that we have the latest release, we can use it to retrieve the source
+tarball URL and the actual version we're packaging. As you may have noticed
+already, the version of a release is its <code>tag_name</code>. As for the tarball, it's
+URL is the <code>tarball_url</code>.</p>
+<p>Also, notice that the tag name has a prefix of <code>v</code>. Portage wouldn't really like
+that prefix, so we should strip it before generating an ebuild for it:</p>
+<pre class="language-python"><code class="language-python">    latest_version <span class="token operator">=</span> release<span class="token punctuation">[</span><span class="token string">"tag_name"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>lstrip<span class="token punctuation">(</span><span class="token string">"v"</span><span class="token punctuation">)</span>
+    latest_tarball <span class="token operator">=</span> release<span class="token punctuation">[</span><span class="token string">"tarball_url"</span><span class="token punctuation">]</span>
+</code></pre>
+<p>Now that we have the tarball, we need to also create an "artifact" for it. An
+artifact in metatools is a resource that is used by a <code>BreezyBuild</code>, and
+ultimately referenced in an ebuild.</p>
+<p>The artifacts are precisely the info metatools uses to figure out what to put in
+the Manifest. They are also what we use to set the <code>SRC_URI</code> in the template.</p>
+<p>Let's create an artifact by specifying the URL and final name for it:</p>
+<pre class="language-python"><code class="language-python">    tarball_artifact <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>Artifact<span class="token punctuation">(</span>
+        url<span class="token operator">=</span>latest_tarball<span class="token punctuation">,</span> final_name<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>pkginfo<span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token punctuation">{</span>latest_version<span class="token punctuation">}</span></span><span class="token string">.tar.gz"</span></span>
+    <span class="token punctuation">)</span>
+</code></pre>
+<p>All that's left is to create the <code>BreezyBuild</code> and <code>push</code> it. <code>BreezyBuild</code>
+basically wraps the context for the ebuild generation. We need to pass the
+<code>pkginfo</code>, the version, the artifacts, along with any other values we'd want to
+access in the template:</p>
+<pre class="language-python"><code class="language-python">    ebuild <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>BreezyBuild<span class="token punctuation">(</span>
+        <span class="token operator">**</span>pkginfo<span class="token punctuation">,</span>
+        version<span class="token operator">=</span>latest_version<span class="token punctuation">,</span>
+        artifacts<span class="token operator">=</span>artifacts<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    ebuild<span class="token punctuation">.</span>push<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>This is basically the whole autogen script! All that's left is to tweak the
+template and test everything out. Let's begin by replacing the hardcoded
+<code>SRC_URI</code> with the URI from the tarball artifact:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">SRC_URI</span><span class="token operator">=</span><span class="token string">"{{ artifacts[0].src_uri }}"</span>
+</code></pre>
+<p>It's as simple as accessing the first (and only) element in the <code>artifacts</code>
+list's <code>src_uri</code> property. And since we're not doing anything special in the
+rest of the template, this should theoretically be good enough. Let's give it a
+try!</p>
+<p>Let's run the autogen and look at the generated ebuild. This is how it looks for
+me:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Distributed under the terms of the GNU General Public License v2</span>
+
+<span class="token assign-left variable">EAPI</span><span class="token operator">=</span><span class="token number">7</span>
+
+<span class="token assign-left variable">PYTHON_COMPAT</span><span class="token operator">=</span><span class="token punctuation">(</span> python3+ <span class="token punctuation">)</span>
+
+inherit python-any-r1
+
+<span class="token assign-left variable">DESCRIPTION</span><span class="token operator">=</span><span class="token string">"Node.js JavaScript runtime"</span>
+<span class="token assign-left variable">HOMEPAGE</span><span class="token operator">=</span><span class="token string">"https://nodejs.org"</span>
+<span class="token assign-left variable">SRC_URI</span><span class="token operator">=</span><span class="token string">"https://api.github.com/repos/nodejs/node/tarball/v17.4.0 -> nodejs-17.4.0.tar.gz"</span>
+
+<span class="token assign-left variable">LICENSE</span><span class="token operator">=</span><span class="token string">"Apache-1.1 Apache-2.0 BSD BSD-2 MIT"</span>
+<span class="token assign-left variable">SLOT</span><span class="token operator">=</span><span class="token string">"0"</span>
+<span class="token assign-left variable">KEYWORDS</span><span class="token operator">=</span><span class="token string">"*"</span>
+<span class="token assign-left variable">IUSE</span><span class="token operator">=</span><span class="token string">""</span>
+
+<span class="token assign-left variable">DEPEND</span><span class="token operator">=</span><span class="token string">""</span>
+<span class="token assign-left variable">RDEPEND</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${DEPEND}</span>"</span>
+<span class="token assign-left variable">BDEPEND</span><span class="token operator">=</span><span class="token string">"
+	<span class="token variable">${PYTHON_DEPS}</span>
+"</span>
+
+<span class="token function-name function">post_src_unpack</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">mv</span> <span class="token string">"<span class="token variable">${WORKDIR}</span>"</span>/node-<span class="token string">"<span class="token variable">${PV}</span>"</span> <span class="token string">"<span class="token variable">${S}</span>"</span> <span class="token operator">||</span> die
+<span class="token punctuation">}</span>
+
+<span class="token function-name function">src_configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token assign-left variable">configure_options</span><span class="token operator">=</span><span class="token punctuation">(</span>
+		<span class="token comment"># By default, prefix is /usr/local, which is outside of PATH,</span>
+		<span class="token comment"># set it to /usr instead:</span>
+		--prefix<span class="token operator">=</span><span class="token string">"<span class="token variable">${EPREFIX}</span>"</span>/usr
+	<span class="token punctuation">)</span>
+
+	<span class="token comment"># NOTE: `econf` default flags appear to trip up the configure process,</span>
+	<span class="token comment">#       directly call the ./configure script instead.</span>
+	./configure <span class="token string">"<span class="token variable">${configure_options<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>It's exactly like the ebuild we wrote manually, with the only exception being
+the <code>SRC_URI</code>. We can also see that a Manifest was generated for us in the
+process. Neat!</p>
+<p>To see if it works, let's <code>emerge</code> it! And... it failed. Oh well, it's the source
+filenames again:</p>
+<pre><code>mv: cannot stat '/var/tmp/portage/net-libs/nodejs-17.4.0/work/node-17.4.0': No such file or directory
+</code></pre>
+<p>Turns out that the tarball we got from the release has a different structure
+than the one we used before. Let's investigate.</p>
+<p>Peeking into <code>/var/tmp/portage/net-libs/nodejs-17.4.0/work</code>, we find a directory
+called <code>nodejs-node-eeed0bd</code>. The name of the directory is actually in the
+format <code>{github_user}-{github_repo}-{commit_sha}</code>.</p>
+<p>Conveniently, we already have the GitHub user and repo defined in the autogen
+script. And as I mentioned earlier, we can pass additional arguments to the
+<code>BreezyBuild</code> if we need them for the template:</p>
+<pre class="language-python"><code class="language-python">    ebuild <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>BreezyBuild<span class="token punctuation">(</span>
+        <span class="token operator">**</span>pkginfo<span class="token punctuation">,</span>
+        version<span class="token operator">=</span>latest_version<span class="token punctuation">,</span>
+        github_user<span class="token operator">=</span>github_user<span class="token punctuation">,</span>
+        github_repo<span class="token operator">=</span>github_repo<span class="token punctuation">,</span>
+        artifacts<span class="token operator">=</span><span class="token punctuation">[</span>tarball_artifact<span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+</code></pre>
+<p>Note that we don't have the commit SHA, but we don't really need it, since it's
+fine to just use a glob for it. Now, we can use these two in the template:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">post_src_unpack</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token function">mv</span> <span class="token string">"<span class="token variable">${WORKDIR}</span>"</span>/<span class="token punctuation">{</span><span class="token punctuation">{</span> github_user <span class="token punctuation">}</span><span class="token punctuation">}</span>-<span class="token punctuation">{</span><span class="token punctuation">{</span> github_repo <span class="token punctuation">}</span><span class="token punctuation">}</span>-* <span class="token string">"<span class="token variable">${S}</span>"</span> <span class="token operator">||</span> die
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Let's generate the ebuild again. Peeking at the ebuild, we see exactly what we
+expected in <code>post_src_unpack</code>:</p>
+<pre><code>post_src_unpack() {
+	mv "${WORKDIR}"/nodejs-node-* "${S}" || die
+}
+</code></pre>
+<p>This looks promising so far, so let's <code>emerge</code> away! And it should be no surprise that it worked!</p>
+<pre class="language-sh"><code class="language-sh">$ node
+Welcome to Node.js v17.4.0.
+Type ".help" for more information.
+> console.log('Hello, world!')
+Hello, world!
+undefined
+</code></pre>
+<p>We now have a script that will always package the latest version of Node for us!
+If this sounds cool, in the future, we'll look into packaging multiple Node
+versions at once, precisely the LTS ones, which is even cooler in my opinion.
+Stay tuned!</p>
+<p>As always, the final code can be found somewhere in the commit history of the
+<a href="https://code.funtoo.org/bitbucket/users/invakid404/repos/nodejs-overlay/browse">nodejs-overlay</a>
+repo.</p>
+<hr>
+<strong>Backlinks</strong>
+<ul>
+<li><a href="/notes/mtOTe8lbUvuixBVzLr9ZE">Enhancing the Node.js Autogen</a></li>
+</ul>

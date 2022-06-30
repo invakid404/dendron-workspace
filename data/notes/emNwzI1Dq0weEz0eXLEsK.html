@@ -1,0 +1,186 @@
+<h1 id="building-nodejs-from-scratch"><a aria-hidden="true" class="anchor-heading" href="#building-nodejs-from-scratch"><svg aria-hidden="true" viewBox="0 0 16 16"><use xlink:href="#svg-link"></use></svg></a>Building Node.js from Scratch</h1>
+<p><img src="/assets/images/nodejs-logo.png" alt="nodejs-logo"></p>
+<p>As a Funtoo user who uses <a href="https://nodejs.org">Node.js</a> at work, I thought it'd
+be great to have the latest and greatest version of Node readily available to
+me. That's why I decided it'd be a great idea to "autogen" it.</p>
+<p>For those who are unfamiliar with the concept of autogens in Funtoo, they are
+practically our very own robot package maintainers. With the power of the
+<a href="https://code.funtoo.org/bitbucket/users/drobbins/repos/funtoo-metatools/browse">metatools</a>
+framework, we can write scripts, which automagically generate ebuilds for us.</p>
+<p>Rewriting the ebuild from scratch isn't a prerequisite for writing an
+autogen, but since the Node.js ebuild is unfamiliar territory to me,
+I thought I might as well try and strip all the nonsense from it. It was also an
+opportunity to document how I personally approach packaging software from
+scratch.</p>
+<p>This blog post captures the process of figuring out how Node.js is built and
+putting together a brand new (and hopefully easier to understand) ebuild for it.</p>
+<p>I set up a quick Funtoo LXD container for testing since I don't feel like
+breaking the Node installation on my host. Now, it's time to set up a local
+overlay as per the <a href="https://www.funtoo.org/Creating_Your_Own_Overlay">docs</a>. I
+created a fork of the Skeleton overlay repo and called it "nodejs-overlay".</p>
+<p>After setting up the development environment, it's time for the main dish. At
+the time of writing this, the latest LTS version of Node is 16.13.2, so it will
+be the one we're targeting. Also, all the URL references to the Node.js GitHub
+repo are for a specific commit, so this post should still make sense even if
+things change in the future.</p>
+<p>Let's create a new file in the <code>nodejs-overlay/net-libs/nodejs</code> directory,
+called <code>nodejs-16.13.2.ebuild</code> and fill in the basic stuff:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Distributed under the terms of the GNU General Public License v2</span>
+
+<span class="token assign-left variable">EAPI</span><span class="token operator">=</span><span class="token number">7</span>
+
+<span class="token assign-left variable">DESCRIPTION</span><span class="token operator">=</span><span class="token string">"Node.js JavaScript runtime"</span>
+<span class="token assign-left variable">HOMEPAGE</span><span class="token operator">=</span><span class="token string">"https://nodejs.org"</span>
+<span class="token assign-left variable">SRC_URI</span><span class="token operator">=</span><span class="token string">"https://github.com/nodejs/node/archive/refs/tags/v16.13.2.tar.gz -> <span class="token variable">${P}</span>.tar.gz"</span>
+
+<span class="token assign-left variable">LICENSE</span><span class="token operator">=</span><span class="token string">"Apache-1.1 Apache-2.0 BSD BSD-2 MIT"</span>
+<span class="token assign-left variable">SLOT</span><span class="token operator">=</span><span class="token string">"0"</span>
+<span class="token assign-left variable">KEYWORDS</span><span class="token operator">=</span><span class="token string">"*"</span>
+<span class="token assign-left variable">IUSE</span><span class="token operator">=</span><span class="token string">""</span>
+
+<span class="token assign-left variable">DEPEND</span><span class="token operator">=</span><span class="token string">""</span>
+<span class="token assign-left variable">RDEPEND</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${DEPEND}</span>"</span>
+<span class="token assign-left variable">BDEPEND</span><span class="token operator">=</span><span class="token string">""</span>
+</code></pre>
+<p>Now, we can run <code>ebuild nodejs-16.13.2.ebuild digest</code> to pull in the sources and
+generate a <code>Manifest</code> file.</p>
+<p>It's about time to look into how Node.js builds.
+<a href="https://github.com/nodejs/node/blob/ce41395f89414dfd459084ea61a7eeac1f67713a/BUILDING.md">This</a>
+document in the repo appears to be a good starting point. Scrolling down to the
+"building on Unix" section, we can see that Node uses GNU make to build, and
+additionally requires Python 3 to be installed. </p>
+<p>We don't really need to worry about GNU make being present, so we can go ahead
+and add a dependency on Python 3+ for now. We will do it by inheriting the
+<a href="https://devmanual.gentoo.org/eclass-reference/python-any-r1.eclass/index.html">python-any-r1</a>
+eclass:</p>
+<pre class="language-bash"><code class="language-bash">inherit python-any-r1
+</code></pre>
+<p>Before the inherit line, we should also define <code>PYTHON_COMPAT</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">PYTHON_COMPAT</span><span class="token operator">=</span><span class="token punctuation">(</span> python3+ <span class="token punctuation">)</span>
+</code></pre>
+<p><em>Note</em>: both of these should go under the <code>EAPI</code> line, since eclasses usually
+require that to be set in advance.</p>
+<p>Then, we can add <code>${PYTHON_DEPS}</code> to <code>BDEPEND</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">BDEPEND</span><span class="token operator">=</span><span class="token string">"
+    <span class="token variable">${PYTHON_DEPS}</span>
+"</span>
+</code></pre>
+<p>The best way to tell if we've done anything meaningful is to simply try to
+emerge our newly created ebuild. While we definitely don't expect it to work,
+the error we get will give us a clue what to do next.</p>
+<p>Doing exactly that, I immediately get hit with the following error:</p>
+<pre><code> * ERROR: net-libs/nodejs-16.13.2::nodejs-overlay failed (prepare phase):
+ *   The source directory '/var/tmp/portage/net-libs/nodejs-16.13.2/work/nodejs-16.13.2' doesn't exist
+</code></pre>
+<p>Seems like our source directory is called something else. Let's investigate!</p>
+<p>We can run <code>ebuild nodejs-16.13.2.ebuild clean unpack</code> to wipe the temporary
+files for nodejs and unpack the source code. Then, we can look into
+<code>/var/tmp/portage/net-libs/nodejs-16.13.2/</code> to see what things look like.</p>
+<p>The source directory lives in the <code>work/</code> subdirectory. Running <code>ls -la</code> in
+there produces the following output:</p>
+<pre><code>total 0
+drwx------ 1 portage portage  24 Jan 24 19:19 .
+drwx------ 1 portage portage 146 Jan 24 19:19 ..
+drwxr-xr-x 1 portage portage 820 Jan 10 20:02 node-16.13.2
+</code></pre>
+<p>Yep, indeed we need to tweak the source directory name. We can either override
+the <code>S</code> (path to temporary build directory/source directory) variable in the
+ebuild, or we can move the directory to <code>S</code>. In Funtoo, we tend to prefer the
+latter.</p>
+<p>To achieve this, we can add <code>post_src_unpack</code> to our ebuild and perform a move
+in it like so:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">post_src_unpack</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">mv</span> <span class="token string">"<span class="token variable">${WORKDIR}</span>"</span>/node-<span class="token string">"<span class="token variable">${PV}</span>"</span> <span class="token string">"<span class="token variable">${S}</span>"</span> <span class="token operator">||</span> die
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Simple as that! If we try to emerge nodejs again, we get a tiny bit further:</p>
+<pre><code> * nodejs-16.13.2.tar.gz BLAKE2B SHA512 size ;-) ...                                                                                                                                     [ ok ]
+ * Using python3.7 to build
+>>> Unpacking source...
+>>> Unpacking nodejs-16.13.2.tar.gz to /var/tmp/portage/net-libs/nodejs-16.13.2/work
+>>> Source unpacked in /var/tmp/portage/net-libs/nodejs-16.13.2/work
+>>> Preparing source in /var/tmp/portage/net-libs/nodejs-16.13.2/work/nodejs-16.13.2 ...
+>>> Source prepared.
+>>> Configuring source in /var/tmp/portage/net-libs/nodejs-16.13.2/work/nodejs-16.13.2 ...
+ * econf: updating nodejs-16.13.2/deps/cares/config.guess with /usr/share/gnuconfig/config.guess
+ * econf: updating nodejs-16.13.2/deps/cares/config.sub with /usr/share/gnuconfig/config.sub
+./configure --prefix=/usr --build=x86_64-pc-linux-gnu --host=x86_64-pc-linux-gnu --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib --libdir=/usr/lib64
+Node.js configure: Found Python 3.7.10...
+gyp: --mandir=/usr/share/man not found (cwd: /var/tmp/portage/net-libs/nodejs-16.13.2/work/nodejs-16.13.2) while trying to load --mandir=/usr/share/man
+Error running GYP
+</code></pre>
+<p>Seems like we hit the configure phase. This is where we need to tweak the
+options to get things to work. The issue in this case appears to be that <code>gyp</code>
+is failing to find the <code>mandir</code>.</p>
+<p>This is one of the default flags that is set by <code>econf</code>, and <code>gyp</code> for some
+reason doesn't like it, so I suppose we're better off overriding <code>src_configure</code>
+in our ebuild (we'll have to do it later anyway) and calling the configure
+script manually:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">src_configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ./configure
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Indeed, this gets us past the configuration phase and we're now in business!
+Node is compiling!</p>
+<p>While we're waiting, we might as well go back and add a little comment to note
+why we chose not to use the <code>econf</code> wrapper:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">src_configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment"># NOTE: `econf` default flags appear to trip up the configure process,</span>
+    <span class="token comment">#       directly call the `./configure` script instead.</span>
+    ./configure
+<span class="token punctuation">}</span>
+</code></pre>
+<p>And after a hefty compile, it indeed was this simple! We now have a functional
+Node.js installation, compiled from source. It is installed outside of <code>PATH</code>
+though (at least on a standard Funtoo system): <code>/usr/local</code>. </p>
+<p>We can still verify that the freshly compiled binary works. Let's run it by
+specifying the full path:</p>
+<pre class="language-sh"><code class="language-sh">$ /usr/local/bin/node 
+Welcome to Node.js v16.13.2.
+Type ".help" for more information.
+> console.log('Hello, world!')
+Hello, world!
+undefined
+</code></pre>
+<p>And indeed, it does! This is certainly good enough for this blog post. As a
+final touch, let's make it install in <code>/usr</code> instead of <code>/usr/local</code>. To do
+this, you usually need to specify some sort of <code>prefix</code> while configuring. The
+way you pass this flag differs from build system to build system, so we'll need
+to check where Node expects it.</p>
+<p>The logical place to start our investigation is the
+<a href="https://github.com/nodejs/node/blob/ce41395f89414dfd459084ea61a7eeac1f67713a/configure"><code>configure</code></a>
+script. It appears to just be checking our Python version and importing the
+<code>configure</code> Python module if it's supported. Otherwise, it just throws some
+fancy error we don't care about.</p>
+<p>So, the real configuration appears to be happening in
+<a href="https://github.com/nodejs/node/blob/ce41395f89414dfd459084ea61a7eeac1f67713a/configure.py"><code>configure.py</code></a>.
+Skimming through it, we can spot the <code>--prefix</code> option
+<a href="https://github.com/nodejs/node/blob/ce41395f89414dfd459084ea61a7eeac1f67713a/configure.py#L77">here</a>.
+It appears to be exactly what we're after!</p>
+<p>Let's just override it in <code>src_configure</code> then. While we can simply set it to
+<code>/usr</code> and call it a day, it doesn't hurt to also prepend <code>EPREFIX</code> to it. Since
+Portage can technically be running in a "prefix" (not targeting /), it's "good
+practice" to account for that in the ebuild.</p>
+<p>This is how our <code>src_configure</code> looks now:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">src_configure</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token assign-left variable">configure_options</span><span class="token operator">=</span><span class="token punctuation">(</span>
+        <span class="token comment"># By default, prefix is /usr/local, which is outside of PATH,</span>
+        <span class="token comment"># set it to /usr instead:</span>
+        --prefix<span class="token operator">=</span><span class="token string">"<span class="token variable">${EPREFIX}</span>"</span>/usr
+    <span class="token punctuation">)</span>
+
+    <span class="token comment"># NOTE: `econf` default flags appear to trip up the configure process,</span>
+    <span class="token comment">#       directly call the ./configure script instead.</span>
+    ./configure <span class="token string">"<span class="token variable">${configure_options<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>With that, we have a pretty satisfactory result. We'll look into autogenning
+Node.js and potentially extending this ebuild in the future.</p>
+<p>BTW, the ebuild we wrote in this blog post can be found in
+<a href="https://code.funtoo.org/bitbucket/users/invakid404/repos/nodejs-overlay/browse">this</a>
+repo.</p>
+<hr>
+<strong>Backlinks</strong>
+<ul>
+<li><a href="/notes/fReYVyqwWjpWNGn8f3hSy">Autogenning Node.js</a></li>
+</ul>

@@ -1,0 +1,220 @@
+<h1 id="enhancing-the-nodejs-autogen"><a aria-hidden="true" class="anchor-heading" href="#enhancing-the-nodejs-autogen"><svg aria-hidden="true" viewBox="0 0 16 16"><use xlink:href="#svg-link"></use></svg></a>Enhancing the Node.js Autogen</h1>
+<p><img src="/assets/images/nodejs-logo-part-3.png" alt="nodejs-logo-part-3"></p>
+<p>In the <a href="/notes/fReYVyqwWjpWNGn8f3hSy">previous</a> blog post about Node.js,
+we wrote an autogen script for it from scratch. Today, we'll look into extending
+our code to generate ebuilds for all Node release channels at once!</p>
+<p>This is needed since not everything works with every Node version. And
+sometimes, you're just stuck with a particular version. My goal is to avoid
+having to resort to "Node version managers" or anything like that and just have
+the ability to install any Node version directly via Portage.</p>
+<p>To achieve this, we'll need to combine a couple of sources of information.
+Firstly, we'll need to fetch all releases and group them by major version via
+the GitHub API, similarly to how we're doing it now. We'll also need to fetch a
+list of LTS release channels to know which Node versions to unmask by default.</p>
+<p>The latter is needed so that we only offer LTS releases to the users by default,
+but still leave a way to install latest current, or even a discontinued version
+if that's what you're after, I'm not judging :D</p>
+<p>In particular, we can fetch
+<a href="https://github.com/nodejs/Release/blob/main/schedule.json">this</a> JSON file from
+the <code>Releases</code> repository in the Node organization. It gives us a timeline of
+all Node releases, and we can use that to figure out whether a release is still
+supported and, more importantly, whether it's an LTS release.</p>
+<p>Let's begin with the fetching of GitHub releases. If we pay close attention to
+the <a href="https://docs.github.com/en/rest/reference/releases#list-releases">API
+reference</a>, we
+can see that the "list releases" is in fact paginated. Since we want to fetch
+all releases, we'll have to fetch all pages.</p>
+<p>The most convenient way to do this in my opinion is to write an <a href="https://www.python.org/dev/peps/pep-0525/"><code>async generator</code></a>. Its purpose will be to
+query the GitHub API until there are pages left and yield us the releases it
+receives. We'll later use that information to find the latest release per
+release channel.</p>
+<p>My implementation of this generator looks like this:</p>
+<pre class="language-python"><code class="language-python"><span class="token keyword">async</span> <span class="token keyword">def</span> <span class="token function">release_generator</span><span class="token punctuation">(</span>hub<span class="token punctuation">,</span> github_user<span class="token punctuation">,</span> github_repo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    page <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+        releases <span class="token operator">=</span> <span class="token keyword">await</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>fetch<span class="token punctuation">.</span>get_page<span class="token punctuation">(</span>
+            <span class="token string-interpolation"><span class="token string">f"https://api.github.com/repos/</span><span class="token interpolation"><span class="token punctuation">{</span>github_user<span class="token punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token punctuation">{</span>github_repo<span class="token punctuation">}</span></span><span class="token string">/releases?page=</span><span class="token interpolation"><span class="token punctuation">{</span>page<span class="token punctuation">}</span></span><span class="token string">&#x26;per_page=100"</span></span><span class="token punctuation">,</span>
+            is_json<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> <span class="token keyword">not</span> releases<span class="token punctuation">:</span>
+            <span class="token keyword">break</span>
+
+        <span class="token keyword">for</span> release <span class="token keyword">in</span> releases<span class="token punctuation">:</span>
+            <span class="token keyword">yield</span> release
+
+        page <span class="token operator">+=</span> <span class="token number">1</span>
+</code></pre>
+<p>In an infinite loop, it queries the GitHub API for the releases at the current
+page. If we receive nothing, this means we've reached the end of the releases,
+so we can terminate. Otherwise, it yields all received releases and moves on to
+the next page. Nothing too fancy.</p>
+<p>Note that we're also specifying the <code>per_page</code> query parameter. It's set to
+<code>100</code> (the maximum) to minimize the amount of requests we make to GitHub.</p>
+<p>With that out of the way, we can now iterate all releases like this:</p>
+<pre class="language-python"><code class="language-python">    <span class="token keyword">async</span> <span class="token keyword">for</span> release <span class="token keyword">in</span> release_generator<span class="token punctuation">(</span>hub<span class="token punctuation">,</span> github_user<span class="token punctuation">,</span> github_repo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">pass</span>
+</code></pre>
+<p>Simple as that! Now, let's define a dictionary, in which we'll store the latest
+release for every release channel up to this point. The high-level description
+of the algorithm for figuring out what the latest release for every major
+version looks like this:</p>
+<ul>
+<li>Parse the current release's version to get its major version.</li>
+<li>Check the dictionary to see what the latest release for this major version is
+up to this point.</li>
+<li>If nothing is found or if the current version is newer than the version of the
+stored release, update the dictionary.</li>
+<li>Otherwise, proceed with the next release.</li>
+</ul>
+<p>Translated to Python, the algorithm looks like this:</p>
+<pre class="language-python"><code class="language-python">    latest_release_by_major <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+    <span class="token keyword">async</span> <span class="token keyword">for</span> release <span class="token keyword">in</span> release_generator<span class="token punctuation">(</span>hub<span class="token punctuation">,</span> github_user<span class="token punctuation">,</span> github_repo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        release_version <span class="token operator">=</span> release<span class="token punctuation">[</span><span class="token string">"version"</span><span class="token punctuation">]</span> <span class="token operator">=</span> version<span class="token punctuation">.</span>parse<span class="token punctuation">(</span>release<span class="token punctuation">[</span><span class="token string">"tag_name"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+        release_major <span class="token operator">=</span> <span class="token builtin">str</span><span class="token punctuation">(</span>release_version<span class="token punctuation">.</span>major<span class="token punctuation">)</span>
+        latest_release <span class="token operator">=</span> latest_release_by_major<span class="token punctuation">.</span>get<span class="token punctuation">(</span>release_major<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> latest_release <span class="token keyword">is</span> <span class="token boolean">None</span> <span class="token keyword">or</span> latest_release<span class="token punctuation">[</span><span class="token string">"version"</span><span class="token punctuation">]</span> <span class="token operator">&#x3C;</span> release_version<span class="token punctuation">:</span>
+            latest_release_by_major<span class="token punctuation">[</span>release_major<span class="token punctuation">]</span> <span class="token operator">=</span> release
+</code></pre>
+<p>If we inspect the versions of all the releases in the dictionary after the loop,
+we get something that looks like this:</p>
+<pre><code>Release channel: 17; Latest version: 17.4.0
+Release channel: 16; Latest version: 16.13.2
+Release channel: 14; Latest version: 14.18.3
+Release channel: 12; Latest version: 12.22.9
+Release channel: 15; Latest version: 15.14.0
+Release channel: 10; Latest version: 10.24.1
+Release channel: 13; Latest version: 13.14.0
+Release channel: 8;  Latest version: 8.17.0
+Release channel: 11; Latest version: 11.15.0
+Release channel: 6;  Latest version: 6.17.1
+Release channel: 9;  Latest version: 9.11.2
+Release channel: 4;  Latest version: 4.9.1
+</code></pre>
+<p>Perfect! All that's left to do is to figure out which of those versions we want
+to unmask. So let's fetch the release schedule JSON and parse the <code>end</code> dates
+within it.</p>
+<p>To parse the dates, we'll need to import <code>datetime</code>:</p>
+<pre class="language-python"><code class="language-python"><span class="token keyword">from</span> datetime <span class="token keyword">import</span> date
+</code></pre>
+<p>Now, for the actual fetching and parsing of the release schedule:</p>
+<pre class="language-python"><code class="language-python">    release_schedule <span class="token operator">=</span> <span class="token keyword">await</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>fetch<span class="token punctuation">.</span>get_page<span class="token punctuation">(</span>
+        <span class="token string-interpolation"><span class="token string">f"https://raw.githubusercontent.com/</span><span class="token interpolation"><span class="token punctuation">{</span>github_user<span class="token punctuation">}</span></span><span class="token string">/Release/main/schedule.json"</span></span><span class="token punctuation">,</span>
+        is_json<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    today <span class="token operator">=</span> date<span class="token punctuation">.</span>today<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> release_channel<span class="token punctuation">,</span> schedule <span class="token keyword">in</span> release_schedule<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        major_version <span class="token operator">=</span> release_channel<span class="token punctuation">.</span>lstrip<span class="token punctuation">(</span><span class="token string">"v"</span><span class="token punctuation">)</span>
+        release <span class="token operator">=</span> latest_release_by_major<span class="token punctuation">.</span>get<span class="token punctuation">(</span>major_version<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> release <span class="token keyword">is</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            <span class="token keyword">continue</span>
+
+        <span class="token keyword">if</span> <span class="token string">"lts"</span> <span class="token keyword">not</span> <span class="token keyword">in</span> schedule<span class="token punctuation">:</span>
+            <span class="token keyword">continue</span>
+
+        end_date <span class="token operator">=</span> date<span class="token punctuation">.</span>fromisoformat<span class="token punctuation">(</span>schedule<span class="token punctuation">[</span><span class="token string">"end"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> today <span class="token operator">></span> end_date<span class="token punctuation">:</span>
+            <span class="token keyword">continue</span>
+
+        release<span class="token punctuation">[</span><span class="token string">"unmasked"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">True</span>
+</code></pre>
+<p>As mentioned above, we fetch the release schedule, we iterate through every
+release channel in it, we try to find the corresponding release in our
+dictionary, then we check if it's an LTS release at all, and lastly we check
+whether it has reached its EOL.</p>
+<p>If all three of those conditions hold, we mark the release as "unmasked" by
+setting the corresponding key to <code>True</code>.</p>
+<p>Armed with that information, we can simply loop through the dictionary and
+generate an ebuild for every single one. To make this a bit nicer, let's extract
+the actual ebuild generation to a separate function:</p>
+<pre class="language-python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">generate_for_release</span><span class="token punctuation">(</span>hub<span class="token punctuation">,</span> release<span class="token punctuation">,</span> <span class="token operator">**</span>pkginfo<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    release_version <span class="token operator">=</span> release<span class="token punctuation">[</span><span class="token string">"tag_name"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>lstrip<span class="token punctuation">(</span><span class="token string">"v"</span><span class="token punctuation">)</span>
+    tarball_url <span class="token operator">=</span> release<span class="token punctuation">[</span><span class="token string">"tarball_url"</span><span class="token punctuation">]</span>
+
+    tarball_artifact <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>Artifact<span class="token punctuation">(</span>
+        url<span class="token operator">=</span>tarball_url<span class="token punctuation">,</span> final_name<span class="token operator">=</span><span class="token string-interpolation"><span class="token string">f"</span><span class="token interpolation"><span class="token punctuation">{</span>pkginfo<span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token punctuation">{</span>release_version<span class="token punctuation">}</span></span><span class="token string">.tar.gz"</span></span>
+    <span class="token punctuation">)</span>
+
+    ebuild <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>BreezyBuild<span class="token punctuation">(</span>
+        <span class="token operator">**</span>pkginfo<span class="token punctuation">,</span>
+        version<span class="token operator">=</span>release_version<span class="token punctuation">,</span>
+        artifacts<span class="token operator">=</span><span class="token punctuation">[</span>tarball_artifact<span class="token punctuation">]</span><span class="token punctuation">,</span>
+        unmasked<span class="token operator">=</span><span class="token string">"unmasked"</span> <span class="token keyword">in</span> release<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+    ebuild<span class="token punctuation">.</span>push<span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Nothing special here, except for the new "unmasked" parameter in <code>BreezyBuild</code>.
+As you may have noticed, I've removed <code>github_user</code> and <code>github_repo</code> from the
+<code>BreezyBuild</code>. We can just set those in <code>pkginfo</code> to avoid having to pass them
+as separate arguments every time:</p>
+<pre class="language-python"><code class="language-python">    github_user <span class="token operator">=</span> pkginfo<span class="token punctuation">[</span><span class="token string">"github_user"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"nodejs"</span>
+    github_repo <span class="token operator">=</span> pkginfo<span class="token punctuation">[</span><span class="token string">"github_repo"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"node"</span>
+</code></pre>
+<p>With that, our autogen already works! The only thing left is to tweak the
+template to take <code>unmasked</code> into account:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">KEYWORDS</span><span class="token operator">=</span><span class="token string">"{{ '*' if unmasked else '' }}"</span>
+</code></pre>
+<p>And we're pretty much done! Let's run the autogen and check whether the keywords
+are as we expect:</p>
+<pre class="language-sh"><code class="language-sh">$ grep -r "KEYWORDS="
+templates/nodejs.tmpl:KEYWORDS="{{ '*' if unmasked else '' }}"
+nodejs-17.4.0.ebuild:KEYWORDS=""
+nodejs-8.17.0.ebuild:KEYWORDS=""
+nodejs-11.15.0.ebuild:KEYWORDS=""
+nodejs-10.24.1.ebuild:KEYWORDS=""
+nodejs-12.22.9.ebuild:KEYWORDS="*"
+nodejs-16.13.2.ebuild:KEYWORDS="*"
+nodejs-6.17.1.ebuild:KEYWORDS=""
+nodejs-4.9.1.ebuild:KEYWORDS=""
+nodejs-13.14.0.ebuild:KEYWORDS=""
+nodejs-15.14.0.ebuild:KEYWORDS=""
+nodejs-14.18.3.ebuild:KEYWORDS="*"
+nodejs-9.11.2.ebuild:KEYWORDS=""
+</code></pre>
+<p>And indeed, they are! We can try to unmask and emerge an older version of Node
+and see whether our template works for it as well:</p>
+<pre class="language-sh"><code class="language-sh"># mkdir -p /etc/portage/package.accept_keywords
+# cat > /etc/portage/package.accept_keywords/nodejs &#x3C;&#x3C;EOF
+net-libs/nodejs **
+EOF
+# emerge -a =nodejs-6.17.1
+$ node --version
+v6.17.1
+</code></pre>
+<p>Piece of cake!</p>
+<p><em>NOTE</em>: There is actually an issue with Node v4 in particular: it uses Python 2
+to build. While we could just drop it, it's equally as simple to make it build
+with Python 2 as well. Since we still have Python 2 at the time of writing this,
+why not?</p>
+<p>According to the
+<a href="https://github.com/nodejs/node/blob/master/doc/changelogs/CHANGELOG_V6.md">changelogs</a>,
+the first version to support Python 3 was Node v6, so let's add a
+<code>python_compat</code> variable to the <code>BreezyBuild</code> to fix this:</p>
+<pre class="language-python"><code class="language-python">    ebuild <span class="token operator">=</span> hub<span class="token punctuation">.</span>pkgtools<span class="token punctuation">.</span>ebuild<span class="token punctuation">.</span>BreezyBuild<span class="token punctuation">(</span>
+        <span class="token operator">**</span>pkginfo<span class="token punctuation">,</span>
+        version<span class="token operator">=</span>release_version<span class="token punctuation">,</span>
+        artifacts<span class="token operator">=</span><span class="token punctuation">[</span>tarball_artifact<span class="token punctuation">]</span><span class="token punctuation">,</span>
+        unmasked<span class="token operator">=</span><span class="token string">"unmasked"</span> <span class="token keyword">in</span> release<span class="token punctuation">,</span>
+        <span class="token comment"># NOTE: First version to support Python 3+ was Node 6,</span>
+        <span class="token comment">#       use Python 2.7 for anything older.</span>
+        python_compat<span class="token operator">=</span><span class="token string">"python3+"</span> <span class="token keyword">if</span> release<span class="token punctuation">[</span><span class="token string">"version"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>major <span class="token operator">>=</span> <span class="token number">6</span> <span class="token keyword">else</span> <span class="token string">"python2_7"</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+</code></pre>
+<p>Let's tweak the template to use the newly added variable as well:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">PYTHON_COMPAT</span><span class="token operator">=</span><span class="token punctuation">(</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> python_compat <span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token punctuation">)</span>
+</code></pre>
+<p>And if we try again:</p>
+<pre class="language-bash"><code class="language-bash">$ doit
+<span class="token comment"># emerge -a =nodejs-4.9.1</span>
+$ node --version
+v4.9.1
+</code></pre>
+<p>If this isn't cool, then I don't know what is :D</p>
+<p>As always, full source can be found
+<a href="https://code.funtoo.org/bitbucket/users/invakid404/repos/nodejs-overlay/browse">here</a>.</p>
