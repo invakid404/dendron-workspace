@@ -19,6 +19,7 @@ commands:
     insertNoteIndex:
         enableMarker: false
     copyNoteLink: {}
+    templateHierarchy: template
 workspace:
     workspaces:
         kachvame-wiki:
@@ -73,8 +74,12 @@ workspace:
             L: low
         todoIntegration: false
         createTaskSelectionType: selection2link
+        taskCompleteStatus:
+            - done
+            - x
     graph:
         zoomSpeed: 1
+        createStub: false
     enableAutoCreateOnDefinition: false
     enableXVaultWikiLink: false
     enableRemoteVaultInit: true
@@ -87,6 +92,7 @@ workspace:
     maxNoteLength: 204800
     dendronVersion: 0.91.0
     enableFullHierarchyNoteTitle: false
+    enableHandlebarTemplates: true
 preview:
     enableFMTitle: true
     enableNoteTitleForLink: true
@@ -128,3 +134,4 @@ publishing:
         editBranch: main
         editViewMode: tree
     enablePrettyLinks: true
+    enableTaskNotes: true
