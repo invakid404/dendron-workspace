@@ -42,16 +42,17 @@
     lodash "^4.17.21"
     node-fetch "^2.6.1"
 
-"@dendronhq/api-server@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/api-server/-/api-server-0.107.0.tgz#3ac4e87790f7fd03fdf6087699c35390dc6ba41e"
-  integrity sha512-cQ0hJ1emNoHF+gHUGdZaRgLJczLogMJDgyzIfUEnLJih5QBHEJR5mbcixpMr2cJwfsxgBdEtrrHukFc3sQ14nw==
+"@dendronhq/api-server@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/api-server/-/api-server-0.111.0.tgz#437933b95989dbcd4500127df94582c9a52bfdf0"
+  integrity sha512-T04Qkt3aDCFmuVv1k3CObxqdGk/DU13FjE4Y7yqY9GGXYtmEa+YsoFNNvcgWyupD3CTsF1q/v0m8MPgnyjZsuw==
   dependencies:
-    "@dendronhq/common-all" "^0.107.0"
-    "@dendronhq/common-server" "^0.107.0"
-    "@dendronhq/engine-server" "^0.107.0"
-    "@sentry/integrations" "^6.13.1"
-    "@sentry/node" "^6.13.1"
+    "@dendronhq/common-all" "^0.111.0"
+    "@dendronhq/common-server" "^0.111.0"
+    "@dendronhq/engine-server" "^0.111.0"
+    "@dendronhq/unified" "^0.111.0"
+    "@sentry/integrations" "7.11.1"
+    "@sentry/node" "7.11.1"
     cors "^2.8.5"
     express "^4.17.1"
     express-async-handler "^1.1.4"
@@ -61,10 +62,10 @@
     morgan "^1.10.0"
     querystring "^0.2.1"
 
-"@dendronhq/common-all@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/common-all/-/common-all-0.107.0.tgz#b284fd6630a388fd21a5355aca5d9fa645b21add"
-  integrity sha512-6P1trG1CsSCukkbBVsm9N5L0rnrqGWbFfEfv8wWMQLP85Bu6p5hYvcE3F5B6mptHAjrhhp09Lm3ei8+X025MZQ==
+"@dendronhq/common-all@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/common-all/-/common-all-0.111.0.tgz#1176629449d7086ab50286b18f0afb44e7902a58"
+  integrity sha512-I0CuxXxtOKsmglRiOv2Li6xp2xbLA6RnTdHInIs2iwOJNpM49FLqlpWPP/GrNKD2wnh3NvPqs/lwb11sXo0yLA==
   dependencies:
     axios "^0.21.4"
     dropbox "^4.0.30"
@@ -75,22 +76,22 @@
     http-status-codes "^2.1.4"
     lodash "^4.17.15"
     luxon "^1.25.0"
-    minimatch "^3.0.4"
+    minimatch "5.1.0"
     nanoid "^3.1.23"
     qs "^6.10.1"
     semver "^7.3.2"
     spark-md5 "^3.0.2"
     title "^3.4.4"
-    vscode-uri "^2.1.2"
+    vscode-uri "^3.0.3"
 
-"@dendronhq/common-server@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/common-server/-/common-server-0.107.0.tgz#46043bc364e04df694cae22c70b1064f819ad8ad"
-  integrity sha512-MigXg2wp1rMlJi/gj/N79Fa0t5stt3vvbaUIXoAhfSy7Qlw++xuR2q2KgB/M1N+9+kE/RW5Hi+9k6nhKBqyYbg==
+"@dendronhq/common-server@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/common-server/-/common-server-0.111.0.tgz#ee6a820b482c1d7efe06a3a153f84e98193ea9f2"
+  integrity sha512-o7tX0umfbLUJXTpakMXvps69T59KVgp79xi2g6nj/nMvmxay687bjsiCTZ7soiGv7qV8xH50jxYk/uhByskAAQ==
   dependencies:
-    "@dendronhq/common-all" "^0.107.0"
-    "@sentry/integrations" "^6.13.3"
-    "@sentry/node" "^6.13.3"
+    "@dendronhq/common-all" "^0.111.0"
+    "@sentry/integrations" "7.11.1"
+    "@sentry/node" "7.11.1"
     ajv "^8.6.0"
     ajv-errors "^3.0.0"
     analytics-node "^5.1.0"
@@ -102,7 +103,6 @@
     handlebars "^4.7.7"
     js-yaml "^4.1.0"
     lodash "^4.17.15"
-    minimatch "^3.0.4"
     pino "^6.3.2"
     pino-pretty "^4.3.0"
     simple-git "^3.3.0"
@@ -112,17 +112,17 @@
     vscode-uri "^2.1.2"
     yaml-unist-parser "^1.3.1"
 
-"@dendronhq/dendron-cli@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-cli/-/dendron-cli-0.107.0.tgz#7e06e84ed9decf2297678c0f5f7feb3358c0d0f3"
-  integrity sha512-wpTzF8eUDawfTiH8s+TEUi+aYtVMp1NLxoKZ6/fuC41R+xcV3DvBIopbaz5EWoJdX32iiHLv2VjBhrxakdPomw==
+"@dendronhq/dendron-cli@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-cli/-/dendron-cli-0.111.0.tgz#a87be8aef32f599a98158c2559a2913d98af05bf"
+  integrity sha512-VqVqaF0MRZyYu6E6ZZhOTtbvd1NcSpUPRO5zpPT7PNjcIKkeyyCUPn7jjZ1Jaws10PYjxXurov0qvnT70RVqSw==
   dependencies:
-    "@dendronhq/api-server" "^0.107.0"
-    "@dendronhq/common-all" "^0.107.0"
-    "@dendronhq/common-server" "^0.107.0"
-    "@dendronhq/dendron-viz" "^0.107.0"
-    "@dendronhq/engine-server" "^0.107.0"
-    "@dendronhq/pods-core" "^0.107.0"
+    "@dendronhq/api-server" "^0.111.0"
+    "@dendronhq/common-all" "^0.111.0"
+    "@dendronhq/common-server" "^0.111.0"
+    "@dendronhq/dendron-viz" "^0.111.0"
+    "@dendronhq/engine-server" "^0.111.0"
+    "@dendronhq/pods-core" "^0.111.0"
     "@jcoreio/async-throttle" "^1.3.2"
     "@types/prompts" "^2.0.14"
     clipboardy "2.3.0"
@@ -135,13 +135,13 @@
     ts-json-schema-generator "^0.95.0"
     yargs "^15.4.1"
 
-"@dendronhq/dendron-viz@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-viz/-/dendron-viz-0.107.0.tgz#3a7cb8033b42802b62d9f0aaf4ca1febde488f3c"
-  integrity sha512-MQv5fwMpB8ipXWWhgTyW0sjKy6dOC86oK4aM8VZYHOgxUGfKUO4JS488hL8XQZj72iQa5TGtnEgTKn+Hux1qGw==
+"@dendronhq/dendron-viz@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/dendron-viz/-/dendron-viz-0.111.0.tgz#807e44b60c50641d16af76b945cc7d3786ef387a"
+  integrity sha512-KpxL9l7T6OwAWp/jWuDQVer3CxQFQ0CZ/CxzpgTWVHvx0zjoUWRfpaDR0zWWIhIpPqbXm6PRZhe60bL6UPAYWg==
   dependencies:
-    "@dendronhq/common-all" "^0.107.0"
-    "@dendronhq/engine-server" "^0.107.0"
+    "@dendronhq/common-all" "^0.111.0"
+    "@dendronhq/engine-server" "^0.111.0"
     d3 "^7.0.0"
     lodash "^4.17.21"
     micromatch "^4.0.4"
@@ -149,14 +149,15 @@
     react-dom "^17.0.2"
     yargs "^17.4.1"
 
-"@dendronhq/engine-server@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/engine-server/-/engine-server-0.107.0.tgz#2fbe14a2bc6b62964eaea3ca5738a98638d93c5e"
-  integrity sha512-rTqq/bAA1nCNi4vFJjGh4G+1jfjHV7poNyKmREBM7cvMjhm8UhzsDwlahH0g48vAs/HHjvhjP4Npcrd4Atum2w==
+"@dendronhq/engine-server@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/engine-server/-/engine-server-0.111.0.tgz#42b3d40ccb980afd5c171420e8d2f1800fcb74c7"
+  integrity sha512-A2Ul5QrzkWK/KTrFrUaNYgbLAHZtoTN4RC4NllTfeKFeZfTwu4UPBnEaF2/AycbQthg86qnKaJkw/MBWvEVvpw==
   dependencies:
-    "@dendronhq/common-all" "^0.107.0"
-    "@dendronhq/common-server" "^0.107.0"
+    "@dendronhq/common-all" "^0.111.0"
+    "@dendronhq/common-server" "^0.111.0"
     "@dendronhq/remark-mermaid" "^0.3.0"
+    "@dendronhq/unified" "^0.111.0"
     "@jcoreio/async-throttle" "^1.4.3"
     "@mapbox/rehype-prism" "^0.5.0"
     axios "^0.21.1"
@@ -198,17 +199,18 @@
     unified-engine "^8.0.0"
     unist-util-select "^3.0.1"
     unist-util-visit "^2.0.3"
-    vscode-uri "^2.1.2"
+    vscode-uri "3.0.3"
 
-"@dendronhq/pods-core@^0.107.0":
-  version "0.107.0"
-  resolved "https://registry.yarnpkg.com/@dendronhq/pods-core/-/pods-core-0.107.0.tgz#1b6dc5ca70e7b9bf66eb934d909c3cb36d3d1f94"
-  integrity sha512-2yXfo2mareRBGvJkFNmS2zHcduG+4D/4Wjgtc5W0kZxHs5SrenvZTqKuRiYrtYke3c4tjBIhP1Cy4/8GPG5Slg==
+"@dendronhq/pods-core@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/pods-core/-/pods-core-0.111.0.tgz#d4b3942c147acc2fd39b07949f06c68505e719ec"
+  integrity sha512-ZUUPo1wF6QU9SVq6yOswTAuKE1i28vLr1mFqEYTkaGKFOqUFUve2gcIDnKy7loUmSedi74PrwAswRnW6TL+7FQ==
   dependencies:
     "@dendronhq/airtable" "^0.11.1"
-    "@dendronhq/common-all" "^0.107.0"
-    "@dendronhq/common-server" "^0.107.0"
-    "@dendronhq/engine-server" "^0.107.0"
+    "@dendronhq/common-all" "^0.111.0"
+    "@dendronhq/common-server" "^0.111.0"
+    "@dendronhq/engine-server" "^0.111.0"
+    "@dendronhq/unified" "^0.111.0"
     "@instantish/martian" "1.0.3"
     "@notionhq/client" "^0.1.9"
     "@octokit/graphql" "^4.6.4"
@@ -236,6 +238,39 @@
     fs-extra "^4.0.1"
     unist-util-visit "^1.1.3"
     which "^1.3.0"
+
+"@dendronhq/unified@^0.111.0":
+  version "0.111.0"
+  resolved "https://registry.yarnpkg.com/@dendronhq/unified/-/unified-0.111.0.tgz#79d059221b668b071d7dd50c697fc5903a4336a0"
+  integrity sha512-fF20HDizOLH8GNBgFFiSlVCCOt5nfUOceKDL4z6ZgHnydwljetVUvafFZzuY/l2retoibflgexoySAkiwQfqCw==
+  dependencies:
+    "@dendronhq/common-all" "^0.111.0"
+    mdast "^3.0.0"
+    mdast-builder "^1.1.1"
+    mdast-util-compact "^2.0.1"
+    mdast-util-inject "^1.1.0"
+    rehype-autolink-headings "^5.0.1"
+    rehype-katex "5"
+    rehype-raw "^5.0.0"
+    rehype-slug "^4.0.1"
+    rehype-stringify "^8.0.0"
+    remark "^12.0.1"
+    remark-abbr "^1.4.0"
+    remark-containers "^1.2.0"
+    remark-footnotes "2"
+    remark-frontmatter "^2.0.0"
+    remark-math "3"
+    remark-parse "^8.0.3"
+    remark-rehype "^8.0.0"
+    remark-stringify "^9.0.1"
+    remark-toc "^7.0.0"
+    remark-variables "^1.4.9"
+    remark-wiki-link "^0.0.4"
+    unified "^9.2.2"
+    unified-engine "^8.0.0"
+    unist-util-select "^3.0.1"
+    unist-util-visit "^2.0.3"
+    vscode-uri "3.0.3"
 
 "@hapi/bourne@^2.0.0":
   version "2.0.0"
@@ -346,82 +381,60 @@
     component-type "^1.2.1"
     join-component "^1.1.0"
 
-"@sentry/core@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-6.16.1.tgz#d9f7a75f641acaddf21b6aafa7a32e142f68f17c"
-  integrity sha512-UFI0264CPUc5cR1zJH+S2UPOANpm6dLJOnsvnIGTjsrwzR0h8Hdl6rC2R/GPq+WNbnipo9hkiIwDlqbqvIU5vw==
+"@sentry/core@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.11.1.tgz#d68e796f3b6428aefd6086a1db00118df7a9a9e4"
+  integrity sha512-kaDSZ6VNuO4ZZdqUOOX6XM6x+kjo2bMnDQ3IJG51FPvVjr8lXYhXj1Ccxcot3pBYAIWPPby2+vNDOXllmXqoBA==
   dependencies:
-    "@sentry/hub" "6.16.1"
-    "@sentry/minimal" "6.16.1"
-    "@sentry/types" "6.16.1"
-    "@sentry/utils" "6.16.1"
+    "@sentry/hub" "7.11.1"
+    "@sentry/types" "7.11.1"
+    "@sentry/utils" "7.11.1"
     tslib "^1.9.3"
 
-"@sentry/hub@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-6.16.1.tgz#526e19db51f4412da8634734044c605b936a7b80"
-  integrity sha512-4PGtg6AfpqMkreTpL7ymDeQ/U1uXv03bKUuFdtsSTn/FRf9TLS4JB0KuTZCxfp1IRgAA+iFg6B784dDkT8R9eg==
+"@sentry/hub@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-7.11.1.tgz#1749b2b102ea1892ff388d65d66d3b402b393958"
+  integrity sha512-M6ClgdXdptS0lUBKB5KpXXe2qMQhsoiEN2pEGRI6+auqhfHCUQB1ZXsfjiOYexKC9fwx7TyFyZ9Jcaf2DTxEhw==
   dependencies:
-    "@sentry/types" "6.16.1"
-    "@sentry/utils" "6.16.1"
+    "@sentry/types" "7.11.1"
+    "@sentry/utils" "7.11.1"
     tslib "^1.9.3"
 
-"@sentry/integrations@^6.13.1", "@sentry/integrations@^6.13.3":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-6.16.1.tgz#ef29e47e3b920126b31c332d381c5a1ca43b0185"
-  integrity sha512-YobbH3jWMRJxCeFzr8USlju1Up0EJoxaAT4y+LQQ0ZLfyfOdPX0d0iFnWMCar8gwR1nRujFS0HM0BBKY3an0LA==
+"@sentry/integrations@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-7.11.1.tgz#fa7b648fd479b9b8b8558f5b23c8c51a066737f5"
+  integrity sha512-G4aw9X2WdRGwLk/2pAj+5LuZnLM4u1GG3o8bOWNASR9E7IiQQ9ERYlnfW7jas+08B1Q61WLwJPXZhJxvQfxLQw==
   dependencies:
-    "@sentry/types" "6.16.1"
-    "@sentry/utils" "6.16.1"
+    "@sentry/types" "7.11.1"
+    "@sentry/utils" "7.11.1"
     localforage "^1.8.1"
     tslib "^1.9.3"
 
-"@sentry/minimal@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-6.16.1.tgz#6a9506a92623d2ff1fc17d60989688323326772e"
-  integrity sha512-dq+mI1EQIvUM+zJtGCVgH3/B3Sbx4hKlGf2Usovm9KoqWYA+QpfVBholYDe/H2RXgO7LFEefDLvOdHDkqeJoyA==
+"@sentry/node@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-7.11.1.tgz#97fd26de26e8203a3c34e26b38f3c2a5ba46828b"
+  integrity sha512-EAAHou/eHSzwRK0Z5qnQiwXNbkpnjWjloaG979gftA+MS/kM0AxQHdOrSJQbOEaqRf3F7/eC4Hj+1tfglAuaLQ==
   dependencies:
-    "@sentry/hub" "6.16.1"
-    "@sentry/types" "6.16.1"
-    tslib "^1.9.3"
-
-"@sentry/node@^6.13.1", "@sentry/node@^6.13.3":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/node/-/node-6.16.1.tgz#d92916da3e95d23e1ada274e97d6bf369e74ac51"
-  integrity sha512-SeDDoug2kUxeF1D7JGPa3h5EXxKtmA01mITBPYx5xbJ0sMksnv5I5bC1SJ8arRRzq6+W1C4IEeDBQtrVCk6ixA==
-  dependencies:
-    "@sentry/core" "6.16.1"
-    "@sentry/hub" "6.16.1"
-    "@sentry/tracing" "6.16.1"
-    "@sentry/types" "6.16.1"
-    "@sentry/utils" "6.16.1"
+    "@sentry/core" "7.11.1"
+    "@sentry/hub" "7.11.1"
+    "@sentry/types" "7.11.1"
+    "@sentry/utils" "7.11.1"
     cookie "^0.4.1"
     https-proxy-agent "^5.0.0"
     lru_map "^0.3.3"
     tslib "^1.9.3"
 
-"@sentry/tracing@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-6.16.1.tgz#32fba3e07748e9a955055afd559a65996acb7d71"
-  integrity sha512-MPSbqXX59P+OEeST+U2V/8Hu/8QjpTUxTNeNyTHWIbbchdcMMjDbXTS3etCgajZR6Ro+DHElOz5cdSxH6IBGlA==
-  dependencies:
-    "@sentry/hub" "6.16.1"
-    "@sentry/minimal" "6.16.1"
-    "@sentry/types" "6.16.1"
-    "@sentry/utils" "6.16.1"
-    tslib "^1.9.3"
+"@sentry/types@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.11.1.tgz#06e2827f6ba37159c33644208a0453b86d25e232"
+  integrity sha512-gIEhOPxC2cjrxQ0+K2SFJ1P6e/an5osSxVc9OOtekN28eHtVsXFCLB8XVWeNQnS7N2VkrVrkqORMBz1kvIcvVQ==
 
-"@sentry/types@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-6.16.1.tgz#4917607115b30315757c2cf84f80bac5100b8ac0"
-  integrity sha512-Wh354g30UsJ5kYJbercektGX4ZMc9MHU++1NjeN2bTMnbofEcpUDWIiKeulZEY65IC1iU+1zRQQgtYO+/hgCUQ==
-
-"@sentry/utils@6.16.1":
-  version "6.16.1"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-6.16.1.tgz#1b9e14c2831b6e8b816f7021b9876133bf2be008"
-  integrity sha512-7ngq/i4R8JZitJo9Sl8PDnjSbDehOxgr1vsoMmerIsyRZ651C/8B+jVkMhaAPgSdyJ0AlE3O7DKKTP1FXFw9qw==
+"@sentry/utils@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.11.1.tgz#1635c5b223369d9428bc83c9b8908c9c3287ee10"
+  integrity sha512-tRVXNT5O9ilkV31pyHeTqA1PcPQfMV/2OR6yUYM4ah+QVISovC0f0ybhByuH5nYg6x/Gsnx1o7pc8L1GE3+O7A==
   dependencies:
-    "@sentry/types" "6.16.1"
+    "@sentry/types" "7.11.1"
     tslib "^1.9.3"
 
 "@sindresorhus/is@^4.0.0":
@@ -781,6 +794,13 @@ brace-expansion@^1.1.7:
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
+
+brace-expansion@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-2.0.1.tgz#1edc459e0f0c548486ecf9fc99f2221364b9a0ae"
+  integrity sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==
+  dependencies:
+    balanced-match "^1.0.0"
 
 braces@^3.0.2, braces@~3.0.2:
   version "3.0.2"
@@ -3013,6 +3033,13 @@ mimic-response@^3.1.0:
   resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-3.1.0.tgz#2d1d59af9c1b129815accc2c46a022a5ce1fa3c9"
   integrity sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==
 
+minimatch@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
+  integrity sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==
+  dependencies:
+    brace-expansion "^2.0.1"
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -4161,7 +4188,7 @@ unified-engine@^8.0.0:
     vfile-reporter "^6.0.0"
     vfile-statistics "^1.1.0"
 
-unified@^9.0.0, unified@^9.1.0, unified@^9.2.1:
+unified@^9.0.0, unified@^9.1.0, unified@^9.2.1, unified@^9.2.2:
   version "9.2.2"
   resolved "https://registry.yarnpkg.com/unified/-/unified-9.2.2.tgz#67649a1abfc3ab85d2969502902775eb03146975"
   integrity sha512-Sg7j110mtefBD+qunSLO1lqOEKdrwBFBrR6Qd8f4uwkhWNlbkaqwHse6e7QvD3AP/MNoJdEDLaf8OxYyoWgorQ==
@@ -4371,6 +4398,11 @@ vfile@^4.0.0:
     is-buffer "^2.0.0"
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
+
+vscode-uri@3.0.3, vscode-uri@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.3.tgz#a95c1ce2e6f41b7549f86279d19f47951e4f4d84"
+  integrity sha512-EcswR2S8bpR7fD0YPeS7r2xXExrScVMxg4MedACaWHEtx9ftCF/qHG1xGkolzTPcEmjTavCQgbVzHUIdTMzFGA==
 
 vscode-uri@^2.1.2:
   version "2.1.2"
